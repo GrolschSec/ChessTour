@@ -1,8 +1,7 @@
 class Player:
-
-    def __int__(self, name=str, lastname=str, birthday=str, sexe=str, classment=int):
+    def __init__(self, name, lastname, birthday, sex, classment):
         self.name = name
         self.lastname = lastname
         self.birthday = birthday
-        self.sexe = sexe
+        self.sex = sex
         self.classment = classment
