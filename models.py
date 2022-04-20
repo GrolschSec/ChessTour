@@ -1,10 +1,11 @@
 class Player:
-    def __init__(self, name, lastname, birthday, sex, classment):
-        self.name = name
-        self.lastname = lastname
-        self.birthday = birthday
-        self.sex = sex
-        self.classment = classment
+    def __init__(self, player_info):
+        self.name = player_info['name']
+        self.lastname = player_info['lastname']
+        self.birthday = player_info['birthday']
+        self.sex = player_info['sex']
+        self.classment = player_info['classment']
+        self.point = 0
 
     def save_to_db(self):
         pass
@@ -21,8 +22,16 @@ class Game:
         self.player_one = player_one
         self.player_two = player_two
 
-    def game_result(self):
-        pass
+    def game_result(self, winner):
+        if winner == self.player_one:
+            result = (1, 0)
+            return result
+        elif winner == self.player_two:
+            result = (0, 1)
+            return result
+        else:
+            result = (0.5, 0.5)
+            return result
 
 
 class Round:
@@ -32,7 +41,10 @@ class Round:
         self.game_three = game_three
         self.game_four = game_four
 
-    def next_round(self):
+    def first_round(self):
+        pass
+
+    def normal_round(self):
         pass
 
 
