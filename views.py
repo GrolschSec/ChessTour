@@ -46,7 +46,7 @@ class MenuViewPlayer(MenuView):
             try:
                 var = int(input(message))
             except ValueError:
-                print("The entry must be a number")
+                print("The entry must be a number.")
                 continue
             break
         return var
@@ -78,20 +78,20 @@ class MenuViewPlayer(MenuView):
         while True:
             try:
                 var = cls.check_str_input(message).upper()
-                if var == "M" or var == "W" or var == "NB":
+                if var == "M" or var == "W":
                     return var
                 else:
                     raise ValueError
             except ValueError:
-                print("Input must be: 'M', 'W' or 'NB'.\n")
+                print("Input must be: 'M' or 'W'.\n")
                 continue
 
     @classmethod
     def add_player(cls):
         name = cls.check_str_input("Enter the name of the player: ")
         lastname = cls.check_str_input("Enter the last name of the player: ")
-        birthday = cls.check_birthday_input("Enter the birthday of the player: ")
-        sex = cls.check_sex_input("Enter the sex of the player ('M', 'W' or 'NB'): ")
+        birthday = cls.check_birthday_input("Enter the birthday of the player: (format: dd/mm/yyyy): ")
+        sex = cls.check_sex_input("Enter the sex of the player ('M' or 'W'): ")
         classment = cls.check_int_input("Enter the classment of the player: ")
         print("######################################\n"
               "########Done ! Player created.########\n"
