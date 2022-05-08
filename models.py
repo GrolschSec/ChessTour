@@ -1,20 +1,57 @@
+from tinydb import TinyDB, Query
+
+
+class Database:
+    @staticmethod
+    def get_db():
+        db = TinyDB("db.json")
+        return db
+
+
 class Player:
     def __init__(self, player_info):
-        self.name = player_info['name']
-        self.lastname = player_info['lastname']
-        self.birthday = player_info['birthday']
-        self.sex = player_info['sex']
-        self.classment = player_info['classment']
+        self.name = player_info["name"]
+        self.lastname = player_info["lastname"]
+        self.birthday = player_info["birthday"]
+        self.sex = player_info["sex"]
+        self.classment = player_info["classment"]
         self.point = 0
 
-    def save_to_db(self):
-        pass
+    def get_serialized_player(self):
+        serialized_player = {
+            "name": self.name,
+            "lastname": self.lastname,
+            "birthday": self.birthday,
+            "sex": self.sex,
+            "classment": self.classment,
+        }
+        return serialized_player
 
-    def get_from_db(self):
-        pass
+    def create_player(self):
+        player = self.get_serialized_player()
+        db = Database.get_db()
+        db.insert(player)
 
-    def delete_from_db(self):
-        pass
+    @staticmethod
+    def read_player(self, identifier):
+        db = Database.get_db()
+        player = self.Player(db.get(doc_id=identifier))
+        return player
+
+    @staticmethod
+    def update_player(identifier, param, new_value):
+        db = Database.get_db()
+        db.update({param: new_value}, doc_ids=[identifier])
+
+    @staticmethod
+    def delete_player(identifier):
+        db = Database.get_db()
+        db.remove(doc_ids=[identifier])
+
+    @staticmethod
+    def read_all_players():
+        db = Database.get_db()
+        return db.all()
 
 
 class Game:
