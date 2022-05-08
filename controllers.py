@@ -29,7 +29,9 @@ class Controller:
                 player_info = cls.MENU_VIEW.modify_player()
                 Player.update_player(player_info[0], player_info[1], player_info[2])
             elif menu_choice == 3:
-                Player.delete_player(cls.MENU_VIEW.remove_player())
+                id_player = cls.MENU_VIEW.remove_player()
+                if id_player == int:
+                    Player.delete_player(id_player)
             elif menu_choice == 4:
                 cls.MENU_VIEW.show_all_player(Player.read_all_players())
             elif menu_choice == 5:

@@ -179,7 +179,7 @@ class MenuView:
         result = cls.check_int_input("Enter the ID of the player you want to remove: ")
         confirm = cls.check_y_or_n("Are you sure you want to delete the user (Y/n): ")
         if confirm != "Y":
-            return
+            return confirm
         print("Player deleted !\n")
         return result
 
