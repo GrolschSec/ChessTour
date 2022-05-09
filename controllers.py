@@ -27,7 +27,7 @@ class Controller:
                 Player(cls.MENU_VIEW.add_player()).create_player()
             elif menu_choice == 2:
                 cls.show_players()
-                player_id = cls.MENU_VIEW.get_player_id(Player.read_all_players()[1])
+                player_id = cls.MENU_VIEW.get_id_modify(Player.read_all_players()[1])
                 player_info = Player.read_player(player_id)
                 player_update = cls.MENU_VIEW.modify_player(
                     player_id, player_info.get_serialized_player()
@@ -37,8 +37,8 @@ class Controller:
                 )
             elif menu_choice == 3:
                 cls.show_players()
-                id_player = cls.MENU_VIEW.remove_player(Player.read_all_players()[1])
-                Player.delete_player(id_player)
+                id_players = cls.MENU_VIEW.remove_player(Player.read_all_players()[1])
+                Player.delete_player(id_players)
             elif menu_choice == 4:
                 cls.show_players()
             elif menu_choice == 5:
