@@ -51,7 +51,11 @@ class Player:
 
     @classmethod
     def read_all_players(cls):
-        return cls.DB_USER.all()
+        id_list = []
+        users = cls.DB_USER.all()
+        for i in range(0, len(users)):
+            id_list.append(users[i].doc_id)
+        return [users, id_list]
 
 
 class Game:

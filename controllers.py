@@ -8,12 +8,12 @@ class Controller:
     @classmethod
     def run(cls):
         while True:
-            user_choice = cls.MENU_VIEW.display_main()
-            if user_choice == 1:
+            menu_choice = cls.MENU_VIEW.display_main()
+            if menu_choice == 1:
                 cls.run_player()
-            elif user_choice == 2:
+            elif menu_choice == 2:
                 pass
-            elif user_choice == 3:
+            elif menu_choice == 3:
                 print("Quitting the program...")
                 break
             else:
@@ -26,15 +26,26 @@ class Controller:
             if menu_choice == 1:
                 Player(cls.MENU_VIEW.add_player()).create_player()
             elif menu_choice == 2:
-                player_info = cls.MENU_VIEW.modify_player()
-                Player.update_player(player_info[0], player_info[1], player_info[2])
+                cls.show_players()
+                player_id = cls.MENU_VIEW.get_player_id(Player.read_all_players()[1])
+                player_info = Player.read_player(player_id)
+                player_update = cls.MENU_VIEW.modify_player(
+                    player_id, player_info.get_serialized_player()
+                )
+                Player.update_player(
+                    player_update[0], player_update[1], player_update[2]
+                )
             elif menu_choice == 3:
-                id_player = cls.MENU_VIEW.remove_player()
-                if id_player == int:
-                    Player.delete_player(id_player)
+                cls.show_players()
+                id_player = cls.MENU_VIEW.remove_player(Player.read_all_players()[1])
+                Player.delete_player(id_player)
             elif menu_choice == 4:
-                cls.MENU_VIEW.show_all_player(Player.read_all_players())
+                cls.show_players()
             elif menu_choice == 5:
                 break
             else:
                 print("Input must be a number between 1 and 5.\n")
+
+    @classmethod
+    def show_players(cls):
+        cls.MENU_VIEW.show_all_player(Player.read_all_players())

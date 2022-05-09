@@ -93,17 +93,17 @@ class MenuView:
                 continue
 
     @classmethod
-    def check_param_input(cls):
+    def check_param_input(cls, user_info):
         param_choice = ""
         while True:
             try:
                 param_choice = cls.check_int_input(
                     "Which parameter would you like to modify: \n"
-                    "1: Name.\n"
-                    "2: Lastname.\n"
-                    "3: Birthday.\n"
-                    "4: Sex.\n"
-                    "5: Classment.\n"
+                    f"1: Name: {user_info['name']}.\n"
+                    f"2: Lastname: {user_info['lastname']}.\n"
+                    f"3: Birthday: {user_info['birthday']}.\n"
+                    f"4: Sex: {user_info['sex']}.\n"
+                    f"5: Classment: {user_info['classment']}.\n"
                     "Choose a number: "
                 )
                 if param_choice < 1 or param_choice > 5:
@@ -141,6 +141,26 @@ class MenuView:
         return inp.upper()
 
     @classmethod
+    def get_player_id(cls, id_list, message):
+        while True:
+            id_get = ""
+            try:
+                id_get = cls.check_int_input(message)
+                if id_get in id_list:
+                    break
+                else:
+                    raise ValueError
+            except ValueError:
+                print("Identifier does not exist in db !")
+                continue
+        return id_get
+
+
+    @classmethod
+    def get_id_modify(cls, id_list):
+        return cls.get_player_id(id_list, "Enter the id of the player you want to modify: ")
+
+    @classmethod
     def get_name(cls):
         return cls.check_str_input("Enter the name of the player: ")
 
@@ -175,21 +195,13 @@ class MenuView:
         return player_info
 
     @classmethod
-    def remove_player(cls):
-        result = cls.check_int_input("Enter the ID of the player you want to remove: ")
-        confirm = cls.check_y_or_n("Are you sure you want to delete the user (Y/n): ")
-        if confirm != "Y":
-            return confirm
-        print("Player deleted !\n")
-        return result
+    def remove_player(cls, list_id):
+        return cls.get_player_id(list_id, "Enter the ID of the player you want to remove: ")
 
     @classmethod
-    def modify_player(cls):
+    def modify_player(cls, identifier, user_info):
         new_value = ""
-        identifier = cls.check_int_input(
-            "Enter the ID of the player you want to modify: "
-        )
-        param = cls.check_param_input()
+        param = cls.check_param_input(user_info)
         if param == "name":
             new_value = cls.get_name()
         elif param == "lastname":
@@ -205,7 +217,8 @@ class MenuView:
 
     @classmethod
     def show_all_player(cls, all_player):
-        maximum = len(all_player)
+        maximum = len(all_player[1])
+        print("(ID) - NAME - LASTNAME\n")
         for i in range(0, maximum):
-            print(f"{all_player[i]['name']} {all_player[i]['lastname']}")
+            print(f"({all_player[1][i]}) - {all_player[0][i]['name']} {all_player[0][i]['lastname']}")
             i += 1
