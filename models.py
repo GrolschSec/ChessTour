@@ -11,6 +11,10 @@ class Database:
     def get_user_table(cls):
         return cls.get_db().table("User")
 
+    @classmethod
+    def get_tournament_table(cls):
+        return cls.get_db().table("Tournament")
+
 
 class Player:
     DB_USER = Database.get_user_table()
@@ -76,11 +80,8 @@ class Game:
 
 
 class Round:
-    def __init__(self, game_one, game_two, game_three, game_four):
-        self.game_one = game_one
-        self.game_two = game_two
-        self.game_three = game_three
-        self.game_four = game_four
+    def __init__(self):
+        pass
 
     def first_round(self):
         pass
@@ -90,8 +91,20 @@ class Round:
 
 
 class Tournament:
-    def __init__(self, round_one, round_two, round_three, round_four):
-        self.round_one = round_one
-        self.round_two = round_two
-        self.round_three = round_three
-        self.round_four = round_four
+
+    def __int__(self, tour_info):
+        self.name = tour_info["Name"]
+        self.place = tour_info["Place"]
+        self.round_number = tour_info["Round Number"]
+        self.time = tour_info["Time"]
+        self.player_one = Player.read_player(tour_info["id1"])
+        self.player_two = Player.read_player(tour_info["id2"])
+        self.player_three = Player.read_player(tour_info["id3"])
+        self.player_four = Player.read_player(tour_info["id4"])
+        self.player_five = Player.read_player(tour_info["id5"])
+        self.player_six = Player.read_player(tour_info["id6"])
+        self.player_seven = Player.read_player(tour_info["id7"])
+        self.player_eight = Player.read_player(tour_info["id8"])
+
+    def lauch_tournament(self):
+        Round.first_round()

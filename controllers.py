@@ -2,7 +2,7 @@ from models import Player
 from views import MenuView
 
 
-class Controller:
+class MenuController:
     MENU_VIEW = MenuView()
 
     @classmethod
