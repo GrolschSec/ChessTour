@@ -1,3 +1,5 @@
+import sys
+
 from models import Player
 from views import MenuView
 
@@ -14,10 +16,9 @@ class MenuController:
             elif menu_choice == 2:
                 pass
             elif menu_choice == 3:
-                print("Quitting the program...")
-                break
+                cls.quit_program()
             else:
-                print("Input must be a number between 1 and 3.")
+                cls.MENU_VIEW.check_max_input(3)
 
     @classmethod
     def run_player(cls):
@@ -44,8 +45,13 @@ class MenuController:
             elif menu_choice == 5:
                 break
             else:
-                print("Input must be a number between 1 and 5.\n")
+                cls.MENU_VIEW.check_max_input(5)
 
     @classmethod
     def show_players(cls):
         cls.MENU_VIEW.show_all_player(Player.read_all_players())
+
+    @classmethod
+    def quit_program(cls):
+        cls.MENU_VIEW.quit_program()
+        sys.exit(0)

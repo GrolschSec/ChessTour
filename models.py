@@ -75,7 +75,7 @@ class Game:
             result = (0, 1)
             return result
         else:
-            result = (0.5, 0.5)
+            result = ([id_player, 0.5], 0.5)
             return result
 
 
@@ -83,10 +83,12 @@ class Round:
     def __init__(self):
         pass
 
-    def first_round(self):
+    @classmethod
+    def first_round(cls):
         pass
 
-    def normal_round(self):
+    @classmethod
+    def normal_round(cls):
         pass
 
 

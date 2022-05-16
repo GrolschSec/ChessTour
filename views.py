@@ -25,6 +25,14 @@ class MenuView:
         return cls.check_int_input("Choose an option: ")
 
     @staticmethod
+    def quit_program():
+        print("Quitting the program...")
+
+    @staticmethod
+    def check_max_input(num_max):
+        print(f"Input must be a number between 1 and {num_max}.")
+
+    @staticmethod
     def check_str_input(message):
         var = ""
         while True:
