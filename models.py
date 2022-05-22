@@ -1,4 +1,4 @@
-from tinydb import TinyDB, Query
+from tinydb import TinyDB
 
 
 class Database:
@@ -94,7 +94,7 @@ class Round:
 
 class Tournament:
 
-    def __int__(self, tour_info):
+    def __init__(self, tour_info):
         self.name = tour_info["Name"]
         self.place = tour_info["Place"]
         self.round_number = tour_info["Round Number"]
@@ -108,5 +108,6 @@ class Tournament:
         self.player_seven = Player.read_player(tour_info["id7"])
         self.player_eight = Player.read_player(tour_info["id8"])
 
-    def lauch_tournament(self):
+    @staticmethod
+    def launch_tournament():
         Round.first_round()

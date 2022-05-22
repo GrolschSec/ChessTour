@@ -88,6 +88,36 @@ class MenuView:
         return var
 
     @classmethod
+    def get_id_modify(cls, id_list):
+        return cls.get_player_id(id_list, "Enter the id of the player you want to modify: ")
+
+    @classmethod
+    def get_name(cls, ):
+        return cls.check_str_input("Enter the name of the player: ")
+
+    @classmethod
+    def get_lastname(cls):
+        return cls.check_str_input("Enter the last name of the player: ")
+
+    @classmethod
+    def get_birthday(cls):
+        return cls.check_birthday_input(
+            "Enter the birthday of the player: (format: dd/mm/yyyy): "
+        )
+
+    @classmethod
+    def get_sex(cls):
+        return cls.check_sex_input("Enter the sex of the player ('M' or 'W'): ")
+
+    @classmethod
+    def get_classment(cls):
+        return cls.check_int_input("Enter the classment of the player: ")
+
+    @classmethod
+    def get_round_number(cls):
+        num = cls.check_int_input("Enter the number of round: (default: 4) ")
+
+    @classmethod
     def check_sex_input(cls, message):
         while True:
             try:
@@ -163,33 +193,6 @@ class MenuView:
                 continue
         return id_get
 
-
-    @classmethod
-    def get_id_modify(cls, id_list):
-        return cls.get_player_id(id_list, "Enter the id of the player you want to modify: ")
-
-    @classmethod
-    def get_name(cls):
-        return cls.check_str_input("Enter the name of the player: ")
-
-    @classmethod
-    def get_lastname(cls):
-        return cls.check_str_input("Enter the last name of the player: ")
-
-    @classmethod
-    def get_birthday(cls):
-        return cls.check_birthday_input(
-            "Enter the birthday of the player: (format: dd/mm/yyyy): "
-        )
-
-    @classmethod
-    def get_sex(cls):
-        return cls.check_sex_input("Enter the sex of the player ('M' or 'W'): ")
-
-    @classmethod
-    def get_classment(cls):
-        return cls.check_int_input("Enter the classment of the player: ")
-
     @classmethod
     def add_player(cls):
         player_info = {
@@ -230,3 +233,29 @@ class MenuView:
         for i in range(0, maximum):
             print(f"({all_player[1][i]}) - {all_player[0][i]['name']} {all_player[0][i]['lastname']}")
             i += 1
+
+    @classmethod
+    def tournament_view(cls):
+        print("############## TOURNAMENT MENU ##############\n"
+              "(1) - New tournament.\n"
+              "(2) - Generate report of a tournament.\n"
+              "(3) - Back to main menu.\n")
+        return cls.check_int_input("Choose an option: ")
+
+    @classmethod
+    def get_tournament_info(cls):
+        tour_info = {
+            "Name": cls.check_str_input("Enter the name of the tournament: "),
+            "Place": cls.check_str_input("Enter the place of the tournament: "),
+            # "Round Number": cls.check_int_input(),
+            # "Time": ,
+            # "id1": ,
+            # "id2": ,
+            # "id3": ,
+            # "id4": ,
+            # "id5": ,
+            # "id6": ,
+            # "id7": ,
+            # "id8": ,
+        }
+        return tour_info

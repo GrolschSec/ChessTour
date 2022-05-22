@@ -1,6 +1,6 @@
 import sys
 
-from models import Player
+from models import Player, Tournament
 from views import MenuView
 
 
@@ -14,7 +14,7 @@ class MenuController:
             if menu_choice == 1:
                 cls.run_player()
             elif menu_choice == 2:
-                pass
+                cls.run_tournament()
             elif menu_choice == 3:
                 cls.quit_program()
             else:
@@ -46,6 +46,19 @@ class MenuController:
                 break
             else:
                 cls.MENU_VIEW.check_max_input(5)
+
+    @classmethod
+    def run_tournament(cls):
+        while True:
+            menu_choice = cls.MENU_VIEW.tournament_view()
+            if menu_choice == 1:
+                Tournament(cls.MENU_VIEW.get_tournament_info())
+            elif menu_choice == 2:
+                pass
+            elif menu_choice == 3:
+                break
+            else:
+                cls.MENU_VIEW.check_max_input(3)
 
     @classmethod
     def show_players(cls):
