@@ -1,6 +1,6 @@
 import sys
 
-from models import Player, Tournament
+from models import Player, Tournament, Database
 from views import MenuView
 
 
@@ -28,7 +28,7 @@ class MenuController:
                 Player(cls.MENU_VIEW.add_player()).create_player()
             elif menu_choice == 2:
                 cls.show_players()
-                player_id = cls.MENU_VIEW.get_id_modify(Player.read_all_players()[1])
+                player_id = cls.check_id(cls.MENU_VIEW.ID_MODIFY)
                 player_info = Player.read_player(player_id)
                 player_update = cls.MENU_VIEW.modify_player(
                     player_id, player_info.get_serialized_player()
@@ -38,8 +38,8 @@ class MenuController:
                 )
             elif menu_choice == 3:
                 cls.show_players()
-                id_players = cls.MENU_VIEW.remove_player(Player.read_all_players()[1])
-                Player.delete_player(id_players)
+                id_player = cls.check_id(cls.MENU_VIEW.ID_REMOVE)
+                Player.delete_player(id_player)
             elif menu_choice == 4:
                 cls.show_players()
             elif menu_choice == 5:
@@ -52,13 +52,27 @@ class MenuController:
         while True:
             menu_choice = cls.MENU_VIEW.tournament_view()
             if menu_choice == 1:
-                Tournament(cls.MENU_VIEW.get_tournament_info())
+                print(cls.get_tournament_info())
             elif menu_choice == 2:
                 pass
             elif menu_choice == 3:
                 break
             else:
                 cls.MENU_VIEW.check_max_input(3)
+
+    @classmethod
+    def check_id(cls, message):
+        identifier = int
+        while True:
+            try:
+                identifier = cls.MENU_VIEW.get_id(message)
+                if Database.check_id(identifier) == 1:
+                    raise ValueError
+            except ValueError:
+                MenuView.get_id_error()
+                continue
+            break
+        return identifier
 
     @classmethod
     def show_players(cls):
@@ -68,3 +82,17 @@ class MenuController:
     def quit_program(cls):
         cls.MENU_VIEW.quit_program()
         sys.exit(0)
+
+    @classmethod
+    def get_tournament_info(cls):
+        tour_info = cls.MENU_VIEW.get_tournament_info()
+        cls.show_players()
+        tour_info.update({"id1": cls.check_id(cls.MENU_VIEW.SELECT_PLAYER)})
+        tour_info.update({"id2": cls.check_id(cls.MENU_VIEW.SELECT_PLAYER)})
+        tour_info.update({"id3": cls.check_id(cls.MENU_VIEW.SELECT_PLAYER)})
+        tour_info.update({"id4": cls.check_id(cls.MENU_VIEW.SELECT_PLAYER)})
+        tour_info.update({"id5": cls.check_id(cls.MENU_VIEW.SELECT_PLAYER)})
+        tour_info.update({"id6": cls.check_id(cls.MENU_VIEW.SELECT_PLAYER)})
+        tour_info.update({"id7": cls.check_id(cls.MENU_VIEW.SELECT_PLAYER)})
+        tour_info.update({"id8": cls.check_id(cls.MENU_VIEW.SELECT_PLAYER)})
+        return tour_info

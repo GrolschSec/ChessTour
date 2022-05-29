@@ -12,6 +12,13 @@ class Database:
         return cls.get_db().table("User")
 
     @classmethod
+    def check_id(cls, identity):
+        db = cls.get_user_table()
+        if not db.get(doc_id=identity):
+            return 1
+        return 0
+
+    @classmethod
     def get_tournament_table(cls):
         return cls.get_db().table("Tournament")
 

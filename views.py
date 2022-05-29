@@ -2,6 +2,10 @@ from datetime import date
 
 
 class MenuView:
+    ID_MODIFY = "Enter the id of the player you want to modify: "
+    ID_REMOVE = "Enter the ID of the player you want to remove: "
+    SELECT_PLAYER = "Select a Player: "
+
     @classmethod
     def display_main(cls):
         print(
@@ -88,11 +92,15 @@ class MenuView:
         return var
 
     @classmethod
-    def get_id_modify(cls, id_list):
-        return cls.get_player_id(id_list, "Enter the id of the player you want to modify: ")
+    def get_id(cls, message):
+        return cls.check_int_input(message)
+
+    @staticmethod
+    def get_id_error():
+        print("Identifier doesn't exist !")
 
     @classmethod
-    def get_name(cls, ):
+    def get_name(cls):
         return cls.check_str_input("Enter the name of the player: ")
 
     @classmethod
@@ -113,9 +121,25 @@ class MenuView:
     def get_classment(cls):
         return cls.check_int_input("Enter the classment of the player: ")
 
+    @staticmethod
+    def get_round_number():
+        while True:
+            num = input("Enter the number of round: (default: 4) ")
+            if not num:
+                return 4
+            elif num.isnumeric():
+                return num
+            else:
+                print("Input must be a number !")
+
     @classmethod
-    def get_round_number(cls):
-        num = cls.check_int_input("Enter the number of round: (default: 4) ")
+    def get_type_of_game(cls):
+        return cls.check_int_input(
+            "Choose the type of game you want to play: \n"
+            "(1) - Blitz.\n"
+            "(2) - Bullet.\n"
+            "(3) - Coup rapide.\n"
+        )
 
     @classmethod
     def check_sex_input(cls, message):
@@ -164,36 +188,6 @@ class MenuView:
         return param
 
     @classmethod
-    def check_y_or_n(cls, message):
-        inp = ""
-        while True:
-            try:
-                inp = cls.check_str_input(message)
-                if inp.upper() == "Y" or inp.upper() == "N":
-                    break
-                else:
-                    raise ValueError
-            except ValueError:
-                print("Input must be 'Y' or 'N'. ")
-                continue
-        return inp.upper()
-
-    @classmethod
-    def get_player_id(cls, id_list, message):
-        while True:
-            id_get = ""
-            try:
-                id_get = cls.check_int_input(message)
-                if id_get in id_list:
-                    break
-                else:
-                    raise ValueError
-            except ValueError:
-                print("Identifier does not exist in db !")
-                continue
-        return id_get
-
-    @classmethod
     def add_player(cls):
         player_info = {
             "name": cls.get_name(),
@@ -204,10 +198,6 @@ class MenuView:
         }
         print("Done ! Player created.\n")
         return player_info
-
-    @classmethod
-    def remove_player(cls, list_id):
-        return cls.get_player_id(list_id, "Enter the ID of the player you want to remove: ")
 
     @classmethod
     def modify_player(cls, identifier, user_info):
@@ -231,15 +221,19 @@ class MenuView:
         maximum = len(all_player[1])
         print("(ID) - NAME - LASTNAME\n")
         for i in range(0, maximum):
-            print(f"({all_player[1][i]}) - {all_player[0][i]['name']} {all_player[0][i]['lastname']}")
+            print(
+                f"({all_player[1][i]}) - {all_player[0][i]['name']} {all_player[0][i]['lastname']}"
+            )
             i += 1
 
     @classmethod
     def tournament_view(cls):
-        print("############## TOURNAMENT MENU ##############\n"
-              "(1) - New tournament.\n"
-              "(2) - Generate report of a tournament.\n"
-              "(3) - Back to main menu.\n")
+        print(
+            "############## TOURNAMENT MENU ##############\n"
+            "(1) - New tournament.\n"
+            "(2) - Generate report of a tournament.\n"
+            "(3) - Back to main menu.\n"
+        )
         return cls.check_int_input("Choose an option: ")
 
     @classmethod
@@ -247,15 +241,7 @@ class MenuView:
         tour_info = {
             "Name": cls.check_str_input("Enter the name of the tournament: "),
             "Place": cls.check_str_input("Enter the place of the tournament: "),
-            # "Round Number": cls.check_int_input(),
-            # "Time": ,
-            # "id1": ,
-            # "id2": ,
-            # "id3": ,
-            # "id4": ,
-            # "id5": ,
-            # "id6": ,
-            # "id7": ,
-            # "id8": ,
+            "Round Number": cls.get_round_number(),
+            "Time": cls.get_type_of_game()
         }
         return tour_info
