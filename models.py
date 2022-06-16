@@ -12,11 +12,11 @@ class Database:
         return cls.get_db().table("User")
 
     @classmethod
-    def check_id(cls, identity):
+    def user_id_exist(cls, identity):
         db = cls.get_user_table()
-        if not db.get(doc_id=identity):
-            return 1
-        return 0
+        if db.get(doc_id=identity) is None:
+            return False
+        return True
 
     @classmethod
     def get_tournament_table(cls):
@@ -76,13 +76,13 @@ class Game:
 
     def game_result(self, winner):
         if winner == self.player_one:
-            result = (1, 0)
+            result = ([self.player_one, 1], [self.player_two, 0])
             return result
         elif winner == self.player_two:
-            result = (0, 1)
+            result = ([self.player_one, 0], [self.player_two, 1])
             return result
         else:
-            result = ([id_player, 0.5], 0.5)
+            result = ([self.player_one, 0.5], [self.player_two, 0.5])
             return result
 
 
@@ -100,7 +100,6 @@ class Round:
 
 
 class Tournament:
-
     def __init__(self, tour_info):
         self.name = tour_info["Name"]
         self.place = tour_info["Place"]
@@ -114,6 +113,16 @@ class Tournament:
         self.player_six = Player.read_player(tour_info["id6"])
         self.player_seven = Player.read_player(tour_info["id7"])
         self.player_eight = Player.read_player(tour_info["id8"])
+        self.players = [
+            self.player_one,
+            self.player_two,
+            self.player_three,
+            self.player_four,
+            self.player_five,
+            self.player_six,
+            self.player_seven,
+            self.player_eight,
+        ]
 
     @staticmethod
     def launch_tournament():

@@ -135,10 +135,11 @@ class MenuView:
     @classmethod
     def get_type_of_game(cls):
         return cls.check_int_input(
-            "Choose the type of game you want to play: \n"
+            "Type of game you want to play: \n"
             "(1) - Blitz.\n"
             "(2) - Bullet.\n"
             "(3) - Coup rapide.\n"
+            "Choose a number: "
         )
 
     @classmethod

@@ -66,7 +66,7 @@ class MenuController:
         while True:
             try:
                 identifier = cls.MENU_VIEW.get_id(message)
-                if Database.check_id(identifier) == 1:
+                if not Database.user_id_exist(identifier):
                     raise ValueError
             except ValueError:
                 MenuView.get_id_error()
