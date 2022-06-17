@@ -52,7 +52,8 @@ class MenuController:
         while True:
             menu_choice = cls.MENU_VIEW.tournament_view()
             if menu_choice == 1:
-                print(cls.get_tournament_info())
+                tournament = Tournament(cls.get_tournament_info())
+                tournament.launch_tournament()
             elif menu_choice == 2:
                 pass
             elif menu_choice == 3:
@@ -87,12 +88,6 @@ class MenuController:
     def get_tournament_info(cls):
         tour_info = cls.MENU_VIEW.get_tournament_info()
         cls.show_players()
-        tour_info.update({"id1": cls.check_id(cls.MENU_VIEW.SELECT_PLAYER)})
-        tour_info.update({"id2": cls.check_id(cls.MENU_VIEW.SELECT_PLAYER)})
-        tour_info.update({"id3": cls.check_id(cls.MENU_VIEW.SELECT_PLAYER)})
-        tour_info.update({"id4": cls.check_id(cls.MENU_VIEW.SELECT_PLAYER)})
-        tour_info.update({"id5": cls.check_id(cls.MENU_VIEW.SELECT_PLAYER)})
-        tour_info.update({"id6": cls.check_id(cls.MENU_VIEW.SELECT_PLAYER)})
-        tour_info.update({"id7": cls.check_id(cls.MENU_VIEW.SELECT_PLAYER)})
-        tour_info.update({"id8": cls.check_id(cls.MENU_VIEW.SELECT_PLAYER)})
+        for i in range(1, 9):
+            tour_info.update({f"id{i}": cls.check_id(cls.MENU_VIEW.SELECT_PLAYER)})
         return tour_info

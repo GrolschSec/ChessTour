@@ -1,5 +1,5 @@
 from tinydb import TinyDB
-
+import time
 
 class Database:
     @staticmethod
@@ -83,16 +83,27 @@ class Game:
             return result
         else:
             result = ([self.player_one, 0.5], [self.player_two, 0.5])
-            return result
+            return
 
 
 class Round:
-    def __init__(self):
-        pass
+    def __init__(self, players, time):
+        self.players = players
+        self.time = time
 
-    @classmethod
-    def first_round(cls):
-        pass
+    def sort_round_one(self):
+        sorted_players = sorted(self.players, key=lambda player: player.classment)
+        sorted_players.reverse()
+        games_round = []
+        for i in range(0, 4):
+            games_round.append(Game(sorted_players[i], sorted_players[i + 4]))
+        return games_round
+
+    def first_round(self):
+        games = self.sort_round_one()
+        for game in games:
+
+
 
     @classmethod
     def normal_round(cls):
@@ -105,25 +116,13 @@ class Tournament:
         self.place = tour_info["Place"]
         self.round_number = tour_info["Round Number"]
         self.time = tour_info["Time"]
-        self.player_one = Player.read_player(tour_info["id1"])
-        self.player_two = Player.read_player(tour_info["id2"])
-        self.player_three = Player.read_player(tour_info["id3"])
-        self.player_four = Player.read_player(tour_info["id4"])
-        self.player_five = Player.read_player(tour_info["id5"])
-        self.player_six = Player.read_player(tour_info["id6"])
-        self.player_seven = Player.read_player(tour_info["id7"])
-        self.player_eight = Player.read_player(tour_info["id8"])
-        self.players = [
-            self.player_one,
-            self.player_two,
-            self.player_three,
-            self.player_four,
-            self.player_five,
-            self.player_six,
-            self.player_seven,
-            self.player_eight,
-        ]
+        self.players = []
+        for i in range(1, 9):
+            self.players.append(Player.read_player(tour_info[f"id{i}"]))
 
-    @staticmethod
-    def launch_tournament():
-        Round.first_round()
+    def launch_tournament(self):
+        rounds = Round(self.players, self.time)
+        rounds.first_round()
+        while self.round_number - 1 < 0:
+            rounds.normal_round()
+            self.round_number -= 1

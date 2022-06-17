@@ -5,6 +5,8 @@ class MenuView:
     ID_MODIFY = "Enter the id of the player you want to modify: "
     ID_REMOVE = "Enter the ID of the player you want to remove: "
     SELECT_PLAYER = "Select a Player: "
+    BLITZ = "Waiting the end of the Round 3 minutes"
+
 
     @classmethod
     def display_main(cls):
@@ -243,6 +245,6 @@ class MenuView:
             "Name": cls.check_str_input("Enter the name of the tournament: "),
             "Place": cls.check_str_input("Enter the place of the tournament: "),
             "Round Number": cls.get_round_number(),
-            "Time": cls.get_type_of_game()
+            "Time": cls.get_type_of_game(),
         }
         return tour_info
