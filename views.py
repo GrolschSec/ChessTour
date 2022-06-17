@@ -7,7 +7,6 @@ class MenuView:
     SELECT_PLAYER = "Select a Player: "
     BLITZ = "Waiting the end of the Round 3 minutes"
 
-
     @classmethod
     def display_main(cls):
         print(
@@ -241,10 +240,38 @@ class MenuView:
 
     @classmethod
     def get_tournament_info(cls):
-        tour_info = {
+        info = {
             "Name": cls.check_str_input("Enter the name of the tournament: "),
             "Place": cls.check_str_input("Enter the place of the tournament: "),
             "Round Number": cls.get_round_number(),
             "Time": cls.get_type_of_game(),
         }
-        return tour_info
+        return info
+
+    @staticmethod
+    def show_games(games):
+        i = 0
+        print("Game ID  -   Player One      -       Player Two")
+        for game in games:
+            print(
+                f"{i}"
+                f"        -   "
+                f"{game.player_one.name} {game.player_one.lastname}"
+                f"  -   "
+                f"{game.player_two.name} {game.player_two.lastname}"
+            )
+            i += 1
+
+    @classmethod
+    def game_win(cls, games):
+        i = 0
+        results = []
+        for game in games:
+            results.append(cls.check_int_input(
+                f"Select the winner of the game:\n"
+                f"(1) - {game.player_one.name} {game.player_one.lastname}\n"
+                f"(2) - {game.player_two.name} {game.player_two.lastname}\n"
+                f"Enter 1 or 2: "
+            ))
+        return results
+

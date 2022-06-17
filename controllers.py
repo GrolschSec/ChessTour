@@ -53,7 +53,10 @@ class MenuController:
             menu_choice = cls.MENU_VIEW.tournament_view()
             if menu_choice == 1:
                 tournament = Tournament(cls.get_tournament_info())
-                tournament.launch_tournament()
+                round_one = tournament.round_one()
+                cls.MENU_VIEW.show_games(round_one)
+                round_one_result = cls.MENU_VIEW.game_win(round_one)
+                print(round_one_result)
             elif menu_choice == 2:
                 pass
             elif menu_choice == 3:

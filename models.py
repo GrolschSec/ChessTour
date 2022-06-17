@@ -1,6 +1,7 @@
 from tinydb import TinyDB
 import time
 
+
 class Database:
     @staticmethod
     def get_db():
@@ -83,7 +84,7 @@ class Game:
             return result
         else:
             result = ([self.player_one, 0.5], [self.player_two, 0.5])
-            return
+            return result
 
 
 class Round:
@@ -91,19 +92,13 @@ class Round:
         self.players = players
         self.time = time
 
-    def sort_round_one(self):
+    def first_round(self):
         sorted_players = sorted(self.players, key=lambda player: player.classment)
         sorted_players.reverse()
         games_round = []
         for i in range(0, 4):
             games_round.append(Game(sorted_players[i], sorted_players[i + 4]))
         return games_round
-
-    def first_round(self):
-        games = self.sort_round_one()
-        for game in games:
-
-
 
     @classmethod
     def normal_round(cls):
@@ -120,9 +115,7 @@ class Tournament:
         for i in range(1, 9):
             self.players.append(Player.read_player(tour_info[f"id{i}"]))
 
-    def launch_tournament(self):
+    def round_one(self):
         rounds = Round(self.players, self.time)
-        rounds.first_round()
-        while self.round_number - 1 < 0:
-            rounds.normal_round()
-            self.round_number -= 1
+        games = rounds.first_round()
+        return games
