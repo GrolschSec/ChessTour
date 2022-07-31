@@ -135,13 +135,22 @@ class MenuView:
 
     @classmethod
     def get_type_of_game(cls):
-        return cls.check_int_input(
-            "Type of game you want to play: \n"
-            "(1) - Blitz.\n"
-            "(2) - Bullet.\n"
-            "(3) - Coup rapide.\n"
-            "Choose a number: "
-        )
+        while True:
+            type_of_game = cls.check_int_input(
+                "Type of game you want to play: \n"
+                "(1) - Blitz.\n"
+                "(2) - Bullet.\n"
+                "(3) - Coup rapide.\n"
+                "Choose a number: "
+            )
+            if type_of_game == 1:
+                return "Blitz"
+            elif type_of_game == 2:
+                return "Bullet"
+            elif type_of_game == 3:
+                return "Coup rapide"
+            else:
+                cls.check_max_input(3)
 
     @classmethod
     def check_sex_input(cls, message):
@@ -244,7 +253,7 @@ class MenuView:
             "Name": cls.check_str_input("Enter the name of the tournament: "),
             "Place": cls.check_str_input("Enter the place of the tournament: "),
             "Round Number": cls.get_round_number(),
-            "Time": cls.get_type_of_game(),
+            "Type of games": cls.get_type_of_game(),
         }
         return info
 
@@ -264,14 +273,15 @@ class MenuView:
 
     @classmethod
     def game_win(cls, games):
-        i = 0
         results = []
         for game in games:
-            results.append(cls.check_int_input(
-                f"Select the winner of the game:\n"
-                f"(1) - {game.player_one.name} {game.player_one.lastname}\n"
-                f"(2) - {game.player_two.name} {game.player_two.lastname}\n"
-                f"Enter 1 or 2: "
-            ))
+            results.append(
+                cls.check_int_input(
+                    f"Select the winner of the game:\n"
+                    f"(1) - {game.player_one.name} {game.player_one.lastname}\n"
+                    f"(2) - {game.player_two.name} {game.player_two.lastname}\n"
+                    f"(3) - NULL\n"
+                    f"Enter 1,2 or 3: "
+                )
+            )
         return results
-

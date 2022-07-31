@@ -55,8 +55,13 @@ class MenuController:
                 tournament = Tournament(cls.get_tournament_info())
                 round_one = tournament.round_one()
                 cls.MENU_VIEW.show_games(round_one)
-                round_one_result = cls.MENU_VIEW.game_win(round_one)
-                print(round_one_result)
+                game_res = cls.MENU_VIEW.game_win(round_one)
+                res = []
+                i = 0
+                for game in round_one:
+                    res.append(game.game_result(game_res[i]))
+                    i += 1
+                print(res)
             elif menu_choice == 2:
                 pass
             elif menu_choice == 3:
@@ -66,6 +71,14 @@ class MenuController:
 
     @classmethod
     def check_id(cls, message):
+        """
+        This function check if an id exist or not in the database.
+        Args:
+            message: a personalized message to show.
+
+        Returns:
+            identifier: if it exist it return the id.
+        """
         identifier = int
         while True:
             try:
@@ -80,15 +93,27 @@ class MenuController:
 
     @classmethod
     def show_players(cls):
+        """
+        This function show the list of all players registered in the database.
+        """
         cls.MENU_VIEW.show_all_player(Player.read_all_players())
 
     @classmethod
     def quit_program(cls):
+        """
+        This function exit the program properly.
+        """
         cls.MENU_VIEW.quit_program()
         sys.exit(0)
 
     @classmethod
     def get_tournament_info(cls):
+        """
+        This function get the info of the tournament
+        (Name, place, number of rounds, type of games, and the players instances).
+        Returns:
+            tour_info: a dictionary that contains all the tournament information.
+        """
         tour_info = cls.MENU_VIEW.get_tournament_info()
         cls.show_players()
         for i in range(1, 9):
