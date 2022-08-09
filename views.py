@@ -5,7 +5,6 @@ class MenuView:
     ID_MODIFY = "Enter the id of the player you want to modify: "
     ID_REMOVE = "Enter the ID of the player you want to remove: "
     SELECT_PLAYER = "Select a Player: "
-    BLITZ = "Waiting the end of the Round 3 minutes"
 
     @classmethod
     def display_main(cls):
@@ -32,6 +31,10 @@ class MenuView:
     @staticmethod
     def quit_program():
         print("Quitting the program...")
+
+    @staticmethod
+    def user_already_selected():
+        print("User already selected ! Select another one:")
 
     @staticmethod
     def check_max_input(num_max):
@@ -116,44 +119,58 @@ class MenuView:
 
     @classmethod
     def get_sex(cls):
-        return cls.check_sex_input("Enter the sex of the player ('M' or 'W'): ")
+        return cls.sex_input("Enter the sex of the player ('M' or 'W'): ")
 
     @classmethod
     def get_classment(cls):
         return cls.check_int_input("Enter the classment of the player: ")
 
     @staticmethod
-    def get_round_number():
+    def description(message):
+        var = ""
+        while True:
+            try:
+                var = input(message)
+                if not var.isascii():
+                    raise ValueError
+            except ValueError:
+                print("Input must be a string.")
+                continue
+            break
+        return var
+
+    @staticmethod
+    def round_number():
         while True:
             num = input("Enter the number of round: (default: 4) ")
             if not num:
                 return 4
-            elif num.isnumeric():
+            elif num.isnumeric() and int(num) >= 4:
                 return num
             else:
-                print("Input must be a number !")
+                print("Input must be a number (minimum: 4) !")
 
     @classmethod
-    def get_type_of_game(cls):
+    def time_control(cls):
         while True:
-            type_of_game = cls.check_int_input(
-                "Type of game you want to play: \n"
+            time = cls.check_int_input(
+                "Time Control: \n"
                 "(1) - Blitz.\n"
                 "(2) - Bullet.\n"
                 "(3) - Coup rapide.\n"
                 "Choose a number: "
             )
-            if type_of_game == 1:
+            if time == 1:
                 return "Blitz"
-            elif type_of_game == 2:
+            elif time == 2:
                 return "Bullet"
-            elif type_of_game == 3:
+            elif time == 3:
                 return "Coup rapide"
             else:
                 cls.check_max_input(3)
 
     @classmethod
-    def check_sex_input(cls, message):
+    def sex_input(cls, message):
         while True:
             try:
                 var = cls.check_str_input(message).upper()
@@ -166,7 +183,7 @@ class MenuView:
                 continue
 
     @classmethod
-    def check_param_input(cls, user_info):
+    def param_input(cls, user_info):
         param_choice = ""
         while True:
             try:
@@ -213,7 +230,7 @@ class MenuView:
     @classmethod
     def modify_player(cls, identifier, user_info):
         new_value = ""
-        param = cls.check_param_input(user_info)
+        param = cls.param_input(user_info)
         if param == "name":
             new_value = cls.get_name()
         elif param == "lastname":
@@ -242,6 +259,7 @@ class MenuView:
         print(
             "############## TOURNAMENT MENU ##############\n"
             "(1) - New tournament.\n"
+            "(2) - Continue a tournament.\n"
             "(2) - Generate report of a tournament.\n"
             "(3) - Back to main menu.\n"
         )
@@ -250,10 +268,11 @@ class MenuView:
     @classmethod
     def get_tournament_info(cls):
         info = {
-            "Name": cls.check_str_input("Enter the name of the tournament: "),
-            "Place": cls.check_str_input("Enter the place of the tournament: "),
-            "Round Number": cls.get_round_number(),
-            "Type of games": cls.get_type_of_game(),
+            "name": cls.check_str_input("Name: "),
+            "location": cls.check_str_input("Location: "),
+            "round_number": cls.round_number(),
+            "time_control": cls.time_control(),
+            "description": cls.description("Description: ")
         }
         return info
 
@@ -285,3 +304,43 @@ class MenuView:
                 )
             )
         return results
+
+    @classmethod
+    def save_tournament_to_db(cls):
+        answer = str
+        choice = bool
+        while True:
+            try:
+                answer = cls.check_str_input("Save to database: [OK]\n"
+                                             "Back to main menu: [RETURN]\n"
+                                             "Choose an option: ")
+                if answer.upper() == "OK" or answer.upper() == "RETURN":
+                    break
+                else:
+                    raise ValueError
+            except ValueError:
+                continue
+        if answer.upper() == "OK":
+            choice = True
+        elif answer.upper() == "RETURN":
+            choice = False
+        return choice
+
+    @classmethod
+    def begin_tournament(cls):
+        choice = str
+        while True:
+            try:
+                choice = cls.check_str_input("Do you want to begin the tournament (Y/n):\t")
+                if choice.upper() == "Y" or choice.upper() == "N":
+                    break
+                else:
+                    raise ValueError
+            except ValueError:
+                continue
+        if choice.upper() == "Y":
+            return True
+        elif choice.upper() == "N":
+            return False
+
+

@@ -25,21 +25,21 @@ class MenuController:
         while True:
             menu_choice = cls.MENU_VIEW.display_player()
             if menu_choice == 1:
-                Player(cls.MENU_VIEW.add_player()).create_player()
+                Player(cls.MENU_VIEW.add_player()).create()
             elif menu_choice == 2:
                 cls.show_players()
                 player_id = cls.check_id(cls.MENU_VIEW.ID_MODIFY)
-                player_info = Player.read_player(player_id)
+                player_info = Player.read(player_id)
                 player_update = cls.MENU_VIEW.modify_player(
                     player_id, player_info.get_serialized_player()
                 )
-                Player.update_player(
+                Player.update(
                     player_update[0], player_update[1], player_update[2]
                 )
             elif menu_choice == 3:
                 cls.show_players()
                 id_player = cls.check_id(cls.MENU_VIEW.ID_REMOVE)
-                Player.delete_player(id_player)
+                Player.delete(id_player)
             elif menu_choice == 4:
                 cls.show_players()
             elif menu_choice == 5:
@@ -52,16 +52,9 @@ class MenuController:
         while True:
             menu_choice = cls.MENU_VIEW.tournament_view()
             if menu_choice == 1:
-                tournament = Tournament(cls.get_tournament_info())
-                round_one = tournament.round_one()
-                cls.MENU_VIEW.show_games(round_one)
-                game_res = cls.MENU_VIEW.game_win(round_one)
-                res = []
                 i = 0
-                for game in round_one:
-                    res.append(game.game_result(game_res[i]))
-                    i += 1
-                print(res)
+                tournament = Tournament(cls.get_tournament_info())
+                cls.tournament(tournament, i)
             elif menu_choice == 2:
                 pass
             elif menu_choice == 3:
@@ -96,7 +89,7 @@ class MenuController:
         """
         This function show the list of all players registered in the database.
         """
-        cls.MENU_VIEW.show_all_player(Player.read_all_players())
+        cls.MENU_VIEW.show_all_player(Player.read_all())
 
     @classmethod
     def quit_program(cls):
@@ -115,7 +108,28 @@ class MenuController:
             tour_info: a dictionary that contains all the tournament information.
         """
         tour_info = cls.MENU_VIEW.get_tournament_info()
+        id_list = []
         cls.show_players()
         for i in range(1, 9):
-            tour_info.update({f"id{i}": cls.check_id(cls.MENU_VIEW.SELECT_PLAYER)})
+            identifier = cls.check_id(cls.MENU_VIEW.SELECT_PLAYER)
+            id_list.append(identifier)
+        tour_info.update({"player_ids": id_list})
         return tour_info
+
+    @classmethod
+    def tournament(cls, tournament, i):
+        if cls.MENU_VIEW.save_tournament_to_db():
+            tournament.create()
+        else:
+            return
+        if cls.MENU_VIEW.begin_tournament():
+            while i < tournament.round_number:
+                round_r = tournament.sort_round(i)
+                cls.MENU_VIEW.show_games(round_r.games)
+                if cls.MENU_VIEW.save_tournament_to_db():
+                    round_res = cls.MENU_VIEW.game_win(round_r.games)
+                    tournament.save_round(round_r, round_res, i)
+                else:
+                    return
+                i += 1
+            tournament.end_tournament()

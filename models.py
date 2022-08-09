@@ -1,8 +1,5 @@
-import random
-
 from tinydb import TinyDB
 from datetime import datetime
-from random import shuffle
 
 
 class Database:
@@ -75,6 +72,7 @@ class Player:
     DB_USER = Database.get_user_table()
 
     def __init__(self, player_info):
+        self.pid = int
         self.name = player_info["name"]
         self.lastname = player_info["lastname"]
         self.birthday = player_info["birthday"]
@@ -82,7 +80,7 @@ class Player:
         self.classment = player_info["classment"]
         self.point = 0
 
-    def get_serialized_player(self):
+    def serialize(self):
         """
         The method take the player info and make it in a serialized format for the database.
         Returns:
@@ -97,17 +95,16 @@ class Player:
         }
         return serialized_player
 
-    def create_player(self):
+    def create(self):
         """
         The method save the data of a user in the database.
         Returns:
             void: Doesn't return anything.
         """
-        player = self.get_serialized_player()
-        self.DB_USER.insert(player)
+        self.pid = self.DB_USER.insert(self.serialize())
 
     @classmethod
-    def read_player(cls, identifier):
+    def read(cls, identifier):
         """
         This method load a user from the database.
         Args:
@@ -116,10 +113,12 @@ class Player:
         Returns:
             player: The instance of the player loaded.
         """
-        return Player(cls.DB_USER.get(doc_id=identifier))
+        player = Player(cls.DB_USER.get(doc_id=identifier))
+        player.pid = identifier
+        return player
 
     @classmethod
-    def update_player(cls, identifier, param, new_value):
+    def update(cls, identifier, param, new_value):
         """
         The method permit to modify the information of a player from the database.
         Args:
@@ -134,7 +133,7 @@ class Player:
         cls.DB_USER.update({param: new_value}, doc_ids=[identifier])
 
     @classmethod
-    def delete_player(cls, identifier):
+    def delete(cls, identifier):
         """
         The method delete a user from the database.
         Args:
@@ -146,7 +145,7 @@ class Player:
         cls.DB_USER.remove(doc_ids=[identifier])
 
     @classmethod
-    def read_all_players(cls):
+    def read_all(cls):
         """
         The method load all the players from the database.
         Returns:
@@ -161,7 +160,10 @@ class Player:
 
 
 class Game:
+    DB_GAME = Database.get_game_table()
+
     def __init__(self, player_one, player_two):
+        self.gid = int
         self.player_one = player_one
         self.player_two = player_two
 
@@ -177,111 +179,141 @@ class Game:
             game and a second list with the data about the player two.
         """
         if winner == 1:
-            result = ([self.player_one, 1], [self.player_two, 0])
+            result = (
+                [
+                    f"[{self.player_one.pid}] {self.player_one.name} {self.player_one.lastname}",
+                    1,
+                ],
+                [
+                    f"[{self.player_two.pid}] {self.player_two.name} {self.player_two.lastname}",
+                    0,
+                ],
+            )
             self.player_one.point += 1
         elif winner == 2:
-            result = ([self.player_one, 0], [self.player_two, 1])
+            result = (
+                [
+                    f"[{self.player_one.pid}] {self.player_one.name} {self.player_one.lastname}",
+                    0,
+                ],
+                [
+                    f"[{self.player_two.pid}] {self.player_two.name} {self.player_two.lastname}",
+                    1,
+                ],
+            )
             self.player_two.point += 1
         else:
-            result = ([self.player_one, 0.5], [self.player_two, 0.5])
+            result = (
+                [
+                    f"[{self.player_one.pid}] {self.player_one.name} {self.player_one.lastname}",
+                    0.5,
+                ],
+                [
+                    f"[{self.player_two.pid}] {self.player_two.name} {self.player_two.lastname}",
+                    0.5,
+                ],
+            )
             self.player_one.point += 0.5
             self.player_two.point += 0.5
         return result
 
+    def save(self, winner):
+        result = self.game_result(winner)
+        return self.DB_GAME.insert({"game": result})
+
 
 class Round:
+    DB_ROUND = Database.get_round_table()
+
     def __init__(self, players):
+        self.rid = int
         self.players = players
         self.games = []
 
-    def first_round(self):
+    def sort_by_classment(self):
         """
         The method sort the players by their classment and then make four instance of games.
         Returns:
             games_round: the games instances for the round.
         """
-        sort_players = sorted(
-            self.players, reverse=True, key=lambda player: player.classment
-        )
-        games_round = []
+        self.games = []
+        sorted(self.players, reverse=True, key=lambda player: player.classment)
         for i in range(0, 4):
-            games_round.append(Game(sort_players[i], sort_players[i + 4]))
-        return games_round
+            self.games.append(Game(self.players[i], self.players[i + 4]))
+        return self.games
 
-    def sort_player_by_point(self):
-        games_round = []
-        sort_players = sorted(
-            self.players, reverse=True, key=lambda player: player.point
-        )
-        for i in range(0, 4):
-            games_round.append(Game(sort_players[i], sort_players[i + 4]))
-        return games_round
-
-    def sort_player_random(self):
-        games_round = []
-        sort_players = sorted(self.players, key=lambda player: player.name)
-        for i in range(0, 4):
-            games_round.append(Game(sort_players[i], sort_players[i + 4]))
-        return games_round
-
-    def normal_round(self, *args):
-        valid = False
-        sort_players = self.sort_player_by_point()
-        r = 0
-        while r < len(args):
-            i = 0
-            while i < 4:
-                if (
-                    sort_players[i].player_one.name == args[r][i].player_one.name
-                    and sort_players[i].player_one.lastname
-                    == args[r][i].player_one.lastname
-                    and sort_players[i].player_two.name == args[r][i].player_two.name
-                    and sort_players[i].player_two.lastname
-                    == args[r][i].player_two.lastname
-                    or sort_players[i].player_one.name == args[r][i].player_two.name
-                    and sort_players[i].player_one.lastname
-                    == args[r][i].player_two.lastname
-                    and sort_players[i].player_two.name == args[r][i].player_one.name
-                    and sort_players[i].player_two.lastname
-                    == args[r][i].player_one.lastname
-                ):
-                    valid = False
-                    break
-                else:
-                    i += 1
-                    valid = True
-            if not valid:
-                sort_players = self.sort_player_random()
-                r = 0
-            elif valid:
-                r += 1
-        return sort_players
+    def sort_by_point(self):
+        self.games = []
+        sorted(self.players, reverse=True, key=lambda player: player.point)
+        i = 0
+        while i < 8:
+            self.games.append(Game(self.players[i], self.players[i + 1]))
+            i += 2
+        return self.games
 
     @staticmethod
-    def round_result(games_result, games):
+    def compare_game(old_game, new_game):
+        if (
+            new_game.player_one.pid == old_game.player_one.pid
+            and new_game.player_two.pid == old_game.player_two.pid
+        ):
+            return False
+        elif (
+            new_game.player_one.pid == old_game.player_two.pid
+            and new_game.player_two.pid == old_game.player_one.pid
+        ):
+            return False
+        return True
+
+    @classmethod
+    def compare_round(cls, old_round, new_round):
+        j = 0
+        while j < 4:
+            for i in range(0, 4):
+                if not cls.compare_game(old_round[i], new_round[j]):
+                    return False
+            j += 1
+        return True
+
+    @classmethod
+    def regular_round(cls, *args):
+        sort_players = cls.sort_by_point()
         i = 0
-        res = []
-        for game in games:
-            res.append(game.game_result(games_result[i]))
+        while i < len(args):
+            if not cls.compare_round(args[i], sort_players):
+                sort_players = None
+                i = 0
+            elif cls.compare_round(args[i], sort_players):
+                i += 1
+        return sort_players
+
+    def save(self, games_result):
+        i = 0
+        res = {}
+        for game in self.games:
+            identifier = game.save(games_result[i])
+            res.update({f"Game {i + 1}": identifier})
             i += 1
-        return res
+        return self.DB_ROUND.insert(res)
 
 
 class Tournament:
     DB_TOURNAMENT = Database.get_tournament_table()
 
     def __init__(self, tour_info):
-        self.name = tour_info["Name"]
-        self.place = tour_info["Place"]
-        self.round_number = tour_info["Round Number"]
-        self.gamestype = tour_info["Type of games"]
-        self.begin_date_time = datetime.now()
+        self.tid = int
+        self.name = tour_info["name"]
+        self.location = tour_info["location"]
+        self.gamestype = tour_info["time_control"]
+        self.round_number = tour_info["round_number"]
+        self.description = tour_info["description"]
+        self.begin_date_time = f"{datetime.now()}"
         self.end_date_time = None
-        self.players = []
-        self.rounds = []
+        self.player_ids = tour_info["player_ids"]
         self.is_done = False
-        for i in range(1, 9):
-            self.players.append(Player.read_player(tour_info[f"id{i}"]))
+        self.players = []
+        for ids in tour_info["player_ids"]:
+            self.players.append(Player.read(ids))
 
     def serialize(self):
         """
@@ -290,14 +322,44 @@ class Tournament:
 
         """
         serialized_tournament = {
-            "Name": self.name,
-            "Place": self.place,
-            "Number of rounds": self.round_number,
-            "Type of games": self.gamestype,
-            "Done": self.is_done,
+            "name": self.name,
+            "location": self.location,
+            "time_control": self.gamestype,
+            "round_number": self.round_number,
+            "description": self.description,
+            "player_ids": self.player_ids,
+            "begin_date_time": self.begin_date_time,
+            "end_date_time": self.end_date_time,
+            "is_done": self.is_done,
         }
         return serialized_tournament
 
+    def create(self):
+        self.tid = self.DB_TOURNAMENT.insert(self.serialize())
+        return self.tid
+
+    @classmethod
+    def read(cls, identifier):
+        tournament = Tournament(cls.DB_TOURNAMENT.get(doc_id=identifier))
+        tournament.tid = identifier
+        return tournament
+
     def end_tournament(self):
         self.is_done = True
-        self.end_date_time = datetime.now()
+        self.end_date_time = f"{datetime.now()}"
+        self.DB_TOURNAMENT.update({"is_done": self.is_done}, doc_ids=self.tid)
+        self.DB_TOURNAMENT.update({"end_date_time": self.end_date_time}, doc_ids=self.tid)
+
+    def sort_round(self, i):
+        round_r = Round(self.players)
+        if i == 0:
+            round_r.sort_by_classment()
+        elif 0 < i < 4:
+            round_r.sort_by_point()
+        else:
+            round_r.sort_by_point()
+        return round_r
+
+    def save_round(self, round_r, round_res, i):
+        identifier = round_r.save(round_res)
+        self.DB_TOURNAMENT.update({f"Round {i}": identifier}, doc_ids=[self.tid])
