@@ -1,7 +1,6 @@
-import sys
-
 from models import Player, Tournament, Database
 from views import MenuView
+from sys import exit
 
 
 class MenuController:
@@ -18,7 +17,7 @@ class MenuController:
             elif menu_choice == 3:
                 cls.quit_program()
             else:
-                cls.MENU_VIEW.check_max_input(3)
+                cls.MENU_VIEW.max_input(3)
 
     @classmethod
     def run_player(cls):
@@ -33,34 +32,36 @@ class MenuController:
                 player_update = cls.MENU_VIEW.modify_player(
                     player_id, player_info.get_serialized_player()
                 )
-                Player.update(
-                    player_update[0], player_update[1], player_update[2]
-                )
+                Player.update(player_update[0], player_update[1], player_update[2])
             elif menu_choice == 3:
                 cls.show_players()
                 id_player = cls.check_id(cls.MENU_VIEW.ID_REMOVE)
-                Player.delete(id_player)
+                if cls.MENU_VIEW.delete_player:
+                    Player.delete(id_player)
+                    cls.MENU_VIEW.player_deleted()
             elif menu_choice == 4:
                 cls.show_players()
             elif menu_choice == 5:
                 break
             else:
-                cls.MENU_VIEW.check_max_input(5)
+                cls.MENU_VIEW.max_input(5)
 
     @classmethod
     def run_tournament(cls):
         while True:
-            menu_choice = cls.MENU_VIEW.tournament_view()
+            menu_choice = cls.MENU_VIEW.tournament_menu()
             if menu_choice == 1:
                 i = 0
                 tournament = Tournament(cls.get_tournament_info())
                 cls.tournament(tournament, i)
             elif menu_choice == 2:
-                pass
+                tournament = Tournament.read(1)
+                i = tournament.get_i()
+                cls.tournament(tournament, i)
             elif menu_choice == 3:
                 break
             else:
-                cls.MENU_VIEW.check_max_input(3)
+                cls.MENU_VIEW.max_input(3)
 
     @classmethod
     def check_id(cls, message):
@@ -75,11 +76,11 @@ class MenuController:
         identifier = int
         while True:
             try:
-                identifier = cls.MENU_VIEW.get_id(message)
+                identifier = cls.MENU_VIEW.id(message)
                 if not Database.user_id_exist(identifier):
                     raise ValueError
             except ValueError:
-                MenuView.get_id_error()
+                MenuView.id_error()
                 continue
             break
         return identifier
@@ -97,7 +98,7 @@ class MenuController:
         This function exit the program properly.
         """
         cls.MENU_VIEW.quit_program()
-        sys.exit(0)
+        exit(0)
 
     @classmethod
     def get_tournament_info(cls):
@@ -107,7 +108,7 @@ class MenuController:
         Returns:
             tour_info: a dictionary that contains all the tournament information.
         """
-        tour_info = cls.MENU_VIEW.get_tournament_info()
+        tour_info = cls.MENU_VIEW.tournament_info()
         id_list = []
         cls.show_players()
         for i in range(1, 9):
@@ -118,18 +119,23 @@ class MenuController:
 
     @classmethod
     def tournament(cls, tournament, i):
-        if cls.MENU_VIEW.save_tournament_to_db():
-            tournament.create()
-        else:
-            return
-        if cls.MENU_VIEW.begin_tournament():
-            while i < tournament.round_number:
+        if i == 0 and tournament.id is None:
+            if cls.MENU_VIEW.save_to_db():
+                tournament.create()
+            else:
+                return
+        if cls.MENU_VIEW.tournament_msg(i):
+            if i > 0:
+                tournament.load_players_data()
+            while i < int(tournament.round_number):
                 round_r = tournament.sort_round(i)
                 cls.MENU_VIEW.show_games(round_r.games)
-                if cls.MENU_VIEW.save_tournament_to_db():
+                if cls.MENU_VIEW.play_the_round():
                     round_res = cls.MENU_VIEW.game_win(round_r.games)
-                    tournament.save_round(round_r, round_res, i)
+                    tournament.save_round(round_r, round_res)
+                    i += 1
                 else:
+                    tournament.save_players_data()
                     return
-                i += 1
             tournament.end_tournament()
+            cls.MENU_VIEW.end_tournament()
