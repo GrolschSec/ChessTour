@@ -1,4 +1,4 @@
-from tinydb import TinyDB
+from tinydb import TinyDB, Query
 from datetime import datetime
 
 
@@ -23,17 +23,22 @@ class Database:
         return cls.get_db().table("User")
 
     @classmethod
-    def user_id_exist(cls, identity):
+    def id_exist(cls, identity, db_i):
         """
         The method is checking if a user id exist in the database.
         Args:
             identity: The user id to check.
+            db_i: The database to use (Users or tournaments).
 
         Returns:
             bool: The return value, True if the id exist, False if it doesn't.
 
         """
-        db = cls.get_user_table()
+        db = cls.get_db()
+        if db_i == 1:
+            db = cls.get_user_table()
+        if db_i == 2:
+            db = cls.get_tournament_table()
         if db.get(doc_id=identity) is None:
             return False
         return True
@@ -64,6 +69,15 @@ class Database:
             cls.get_db().table("Game"): The Game table.
         """
         return cls.get_db().table("Game")
+
+    @classmethod
+    def unfinished_tournament(cls):
+        tournament_ids = []
+        db = cls.get_tournament_table()
+        tournaments = db.search(Query().is_done == False)
+        for tournament in tournaments:
+            tournament_ids.append(tournament.doc_id)
+        return tournament_ids
 
 
 class Player:

@@ -55,9 +55,11 @@ class MenuController:
                 tournament = Tournament(cls.get_tournament_info())
                 cls.tournament(tournament, i)
             elif menu_choice == 2:
-                tournament = Tournament.read(1)
-                i = tournament.get_i()
-                cls.tournament(tournament, i)
+                id_tournament = cls.select_tournament()
+                if id_tournament:
+                    tournament = Tournament.read()
+                    i = tournament.get_i()
+                    cls.tournament(tournament, i)
             elif menu_choice == 3:
                 break
             else:
@@ -77,7 +79,7 @@ class MenuController:
         while True:
             try:
                 identifier = cls.MENU_VIEW.id(message)
-                if not Database.user_id_exist(identifier):
+                if not Database.id_exist(identifier, 1):
                     raise ValueError
             except ValueError:
                 MenuView.id_error()
@@ -99,6 +101,32 @@ class MenuController:
         """
         cls.MENU_VIEW.quit_program()
         exit(0)
+
+    @classmethod
+    def load_tournaments(cls):
+        tournaments = []
+        tournaments_id = Database.unfinished_tournament()
+        for ids in tournaments_id:
+            tournaments.append(Tournament.read(ids))
+        return tournaments
+
+    @classmethod
+    def select_tournament(cls):
+        identifier = 0
+        tournaments = cls.load_tournaments()
+        if not tournaments:
+            print("There is no tournament available to continue.")
+            return
+        while True:
+            try:
+                identifier = MenuView.show_tournaments(tournaments)
+                if not Database.id_exist(identifier, 2):
+                    raise ValueError
+            except ValueError:
+                MenuView.id_error()
+                continue
+            break
+        return identifier
 
     @classmethod
     def get_tournament_info(cls):

@@ -352,3 +352,12 @@ class MenuView:
     @staticmethod
     def player_deleted():
         print("Player deleted !")
+
+    @classmethod
+    def show_tournaments(cls, tournaments):
+        for tournament in tournaments:
+            print(
+                f"\t\t\t[{tournament.id}] - Name: {tournament.name} - Location: {tournament.location}\n"
+                f"Time Control: {tournament.gamestype} - Begin Date Time: {tournament.begin_date_time}\n\n"
+            )
+        return cls.check_int("Enter the id of the tournament you want to continue:\t")
