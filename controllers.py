@@ -57,7 +57,7 @@ class MenuController:
             elif menu_choice == 2:
                 id_tournament = cls.select_tournament()
                 if id_tournament:
-                    tournament = Tournament.read()
+                    tournament = Tournament.read(id_tournament)
                     i = tournament.get_i()
                     cls.tournament(tournament, i)
             elif menu_choice == 3:
