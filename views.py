@@ -1,4 +1,4 @@
-from datetime import date, datetime
+from datetime import date
 
 
 class MenuView:
@@ -246,7 +246,7 @@ class MenuView:
             "############## TOURNAMENT MENU ##############\n"
             "(1) - New tournament.\n"
             "(2) - Continue a tournament.\n"
-            "(3) - Generate report of a tournament.\n"
+            "(3) - Report Menu.\n"
             "(4) - Back to main menu.\n"
         )
         return self.check_int("Choose an option: ")
@@ -258,7 +258,7 @@ class MenuView:
             "round_number": self.round_number(),
             "time_control": self.time_control(),
             "description": self.description("Description: "),
-            "begin_date_time": f"{datetime.now}",
+            "begin_date_time": None,
             "end_date_time": None,
         }
         return info

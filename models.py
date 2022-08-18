@@ -315,6 +315,8 @@ class Tournament:
         self.player_ids = tour_info["player_ids"]
         self.is_done = False
         self.players = []
+        if self.begin_date_time is None:
+            self.begin_date_time = f"{datetime.now()}"
         for ids in tour_info["player_ids"]:
             self.players.append(Player.read(ids))
 

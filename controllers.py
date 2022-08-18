@@ -30,13 +30,13 @@ class MenuController:
                 player_id = cls.check_id(cls.MENU_VIEW.ID_MODIFY)
                 player_info = Player.read(player_id)
                 player_update = cls.MENU_VIEW.modify_player(
-                    player_id, player_info.get_serialized_player()
+                    player_id, player_info.serialize()
                 )
                 Player.update(player_update[0], player_update[1], player_update[2])
             elif menu_choice == 3:
                 cls.show_players(0)
                 id_player = cls.check_id(cls.MENU_VIEW.ID_REMOVE)
-                if cls.MENU_VIEW.delete_player:
+                if cls.MENU_VIEW.delete_player():
                     Player.delete(id_player)
                     cls.MENU_VIEW.player_deleted()
             elif menu_choice == 4:
@@ -194,7 +194,6 @@ class MenuController:
 
     @classmethod
     def run_reports(cls):
-        round_info = []
         while True:
             choice = cls.MENU_VIEW.display_reports()
             if choice == 1:
