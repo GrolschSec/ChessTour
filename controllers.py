@@ -175,6 +175,7 @@ class MenuController:
                 else:
                     tournament.save_players_data()
                     return
+            tournament.clear_players_data()
             tournament.end()
             cls.MENU_VIEW.end_tournament()
 

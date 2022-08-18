@@ -247,7 +247,7 @@ class Round:
             games_round: the games instances for the round.
         """
         self.games = []
-        sorted(self.players, reverse=True, key=lambda player: player.classment)
+        self.players = sorted(self.players, reverse=True, key=lambda player: player.classment)
         for i in range(0, 4):
             self.games.append(Game(self.players[i], self.players[i + 4]))
 
@@ -278,7 +278,7 @@ class Round:
             game.player_two.opponents.append(game.player_one.id)
 
     def sort_by_point(self):
-        sorted(self.players, reverse=True, key=lambda players: players.point)
+        self.players = sorted(self.players, reverse=True, key=lambda players: players.point)
         while len(self.games) != 4:
             p1 = self.select_p1()
             p2 = self.select_p2(p1)
@@ -377,6 +377,11 @@ class Tournament:
     def load_players_data(self):
         for player in self.players:
             player.read_tour_info()
+
+    def clear_players_data(self):
+        for player in self.players:
+            player.update(player.id, "point", 0)
+            player.update(player.id, "opponents", [])
 
     def get_i(self):
         i = 0
