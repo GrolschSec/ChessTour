@@ -1,4 +1,4 @@
-from datetime import date
+from datetime import date, datetime
 
 
 class MenuView:
@@ -6,18 +6,16 @@ class MenuView:
     ID_REMOVE = "Enter the ID of the player you want to remove: "
     SELECT_PLAYER = "Select a Player: "
 
-    @classmethod
-    def display_main(cls):
+    def display_main(self):
         print(
             "############## WELCOME TO CHESSTOUR ##############\n"
             "(1) - Player Menu.\n"
             "(2) - Tournament.\n"
             "(3) - Quit the program.\n"
         )
-        return cls.check_int("Choose an option: ")
+        return self.check_int("Choose an option: ")
 
-    @classmethod
-    def display_player(cls):
+    def display_player(self):
         print(
             "################## PLAYER MENU ###################\n"
             "(1) - Add a player.\n"
@@ -26,7 +24,7 @@ class MenuView:
             "(4) - Show all players.\n"
             "(5) - Back to main menu.\n"
         )
-        return cls.check_int("Choose an option: ")
+        return self.check_int("Choose an option: ")
 
     @staticmethod
     def quit_program():
@@ -34,7 +32,7 @@ class MenuView:
 
     @staticmethod
     def max_input(num_max):
-        print(f"Input must be a number between 1 and {num_max}.")
+        print(f"Input must be a number between 1 and {num_max}.\n")
 
     @staticmethod
     def check_str(message):
@@ -91,35 +89,32 @@ class MenuView:
             break
         return var
 
-    @classmethod
-    def id(cls, message):
-        return cls.check_int(message)
+    def id(self, message):
+        return self.check_int(message)
 
     @staticmethod
-    def id_error():
-        print("Identifier doesn't exist !")
+    def id_error(mode):
+        if mode == 1:
+            print("Identifier doesn't exist !")
+        elif mode == 2:
+            print("User already selected !")
 
-    @classmethod
-    def name(cls):
-        return cls.check_str("Enter the name of the player: ")
+    def name(self):
+        return self.check_str("Enter the name of the player: ")
 
-    @classmethod
-    def lastname(cls):
-        return cls.check_str("Enter the last name of the player: ")
+    def lastname(self):
+        return self.check_str("Enter the last name of the player: ")
 
-    @classmethod
-    def birthday(cls):
-        return cls.check_birthday(
+    def birthday(self):
+        return self.check_birthday(
             "Enter the birthday of the player: (format: dd/mm/yyyy): "
         )
 
-    @classmethod
-    def sex(cls):
-        return cls.sex_input("Enter the sex of the player ('M' or 'W'): ")
+    def sex(self):
+        return self.sex_input("Enter the sex of the player ('M' or 'W'): ")
 
-    @classmethod
-    def classment(cls):
-        return cls.check_int("Enter the classment of the player: ")
+    def classment(self):
+        return self.check_int("Enter the classment of the player: ")
 
     @staticmethod
     def description(message):
@@ -146,10 +141,9 @@ class MenuView:
             else:
                 print("Input must be a number (minimum: 4) !")
 
-    @classmethod
-    def time_control(cls):
+    def time_control(self):
         while True:
-            time = cls.check_int(
+            time = self.check_int(
                 "Time Control: \n"
                 "(1) - Blitz.\n"
                 "(2) - Bullet.\n"
@@ -163,13 +157,12 @@ class MenuView:
             elif time == 3:
                 return "Coup rapide"
             else:
-                cls.max_input(3)
+                self.max_input(3)
 
-    @classmethod
-    def sex_input(cls, message):
+    def sex_input(self, message):
         while True:
             try:
-                var = cls.check_str(message).upper()
+                var = self.check_str(message).upper()
                 if var == "M" or var == "W":
                     return var
                 else:
@@ -178,12 +171,11 @@ class MenuView:
                 print("Input must be: 'M' or 'W'.\n")
                 continue
 
-    @classmethod
-    def param_input(cls, user_info):
+    def param_input(self, user_info):
         param_choice = ""
         while True:
             try:
-                param_choice = cls.check_int(
+                param_choice = self.check_int(
                     "Which parameter would you like to modify: \n"
                     f"1: Name: {user_info['name']}.\n"
                     f"2: Lastname: {user_info['lastname']}.\n"
@@ -211,37 +203,35 @@ class MenuView:
             param = "classment"
         return param
 
-    @classmethod
-    def add_player(cls):
+    def add_player(self):
         player_info = {
-            "name": cls.name(),
-            "lastname": cls.lastname(),
-            "birthday": cls.birthday(),
-            "sex": cls.sex(),
-            "classment": cls.classment(),
+            "name": self.name(),
+            "lastname": self.lastname(),
+            "birthday": self.birthday(),
+            "sex": self.sex(),
+            "classment": self.classment(),
         }
         print("Done ! Player created.\n")
         return player_info
 
-    @classmethod
-    def modify_player(cls, identifier, user_info):
+    def modify_player(self, identifier, user_info):
         new_value = ""
-        param = cls.param_input(user_info)
+        param = self.param_input(user_info)
         if param == "name":
-            new_value = cls.name()
+            new_value = self.name()
         elif param == "lastname":
-            new_value = cls.lastname()
+            new_value = self.lastname()
         elif param == "birthday":
-            new_value = cls.birthday()
+            new_value = self.birthday()
         elif param == "sex":
-            new_value = cls.sex()
+            new_value = self.sex()
         elif param == "classment":
-            new_value = cls.classment()
+            new_value = self.classment()
         print("Player modified !")
         return [identifier, param, new_value]
 
-    @classmethod
-    def show_all_player(cls, all_player):
+    @staticmethod
+    def show_all_player(all_player):
         maximum = len(all_player[1])
         print("(ID) - NAME - LASTNAME\n")
         for i in range(0, maximum):
@@ -249,26 +239,27 @@ class MenuView:
                 f"({all_player[1][i]}) - {all_player[0][i]['name']} {all_player[0][i]['lastname']}"
             )
             i += 1
+        print("\n")
 
-    @classmethod
-    def tournament_menu(cls):
+    def display_tournament(self):
         print(
             "############## TOURNAMENT MENU ##############\n"
             "(1) - New tournament.\n"
             "(2) - Continue a tournament.\n"
-            "(2) - Generate report of a tournament.\n"
-            "(3) - Back to main menu.\n"
+            "(3) - Generate report of a tournament.\n"
+            "(4) - Back to main menu.\n"
         )
-        return cls.check_int("Choose an option: ")
+        return self.check_int("Choose an option: ")
 
-    @classmethod
-    def tournament_info(cls):
+    def tournament_info(self):
         info = {
-            "name": cls.check_str("Name: "),
-            "location": cls.check_str("Location: "),
-            "round_number": cls.round_number(),
-            "time_control": cls.time_control(),
-            "description": cls.description("Description: "),
+            "name": self.check_str("Name: "),
+            "location": self.check_str("Location: "),
+            "round_number": self.round_number(),
+            "time_control": self.time_control(),
+            "description": self.description("Description: "),
+            "begin_date_time": f"{datetime.now}",
+            "end_date_time": None,
         }
         return info
 
@@ -277,21 +268,26 @@ class MenuView:
         i = 0
         print("Game ID  -   Player One      -       Player Two")
         for game in games:
+            if game.is_black == 1:
+                player_one_color = "Black"
+                player_two_color = "White"
+            else:
+                player_one_color = "White"
+                player_two_color = "Black"
             print(
                 f"{i}"
                 f"        -   "
-                f"{game.player_one.name} {game.player_one.lastname}"
+                f"{game.player_one.name} {game.player_one.lastname} ({player_one_color})"
                 f"  -   "
-                f"{game.player_two.name} {game.player_two.lastname}"
+                f"{game.player_two.name} {game.player_two.lastname} ({player_two_color})"
             )
             i += 1
 
-    @classmethod
-    def game_win(cls, games):
+    def game_win(self, games):
         results = []
         for game in games:
             results.append(
-                cls.check_int(
+                self.check_int(
                     f"Select the winner of the game:\n"
                     f"(1) - {game.player_one.name} {game.player_one.lastname}\n"
                     f"(2) - {game.player_two.name} {game.player_two.lastname}\n"
@@ -301,12 +297,11 @@ class MenuView:
             )
         return results
 
-    @classmethod
-    def yes_or_no(cls, message):
+    def yes_or_no(self, message):
         choice = str
         while True:
             try:
-                choice = cls.check_str(message)
+                choice = self.check_str(message)
                 if choice.upper() == "Y" or choice.upper() == "N":
                     break
                 else:
@@ -318,46 +313,134 @@ class MenuView:
         elif choice.upper() == "N":
             return False
 
-    @classmethod
-    def begin_tournament(cls):
-        return cls.yes_or_no("Do you want to begin the tournament ? (Y/n):\t")
+    def begin_tournament(self):
+        return self.yes_or_no("Do you want to begin the tournament ? (Y/n):\t")
 
-    @classmethod
-    def save_to_db(cls):
-        return cls.yes_or_no("Save to Database ? (Y/n):\t")
+    def save_to_db(self):
+        return self.yes_or_no("Save to Database ? (Y/n):\t")
 
-    @classmethod
-    def play_the_round(cls):
-        return cls.yes_or_no("Play the round ? (Y/n):\t")
+    def play_the_round(self):
+        return self.yes_or_no("Play the round ? (Y/n):\t")
 
     @staticmethod
     def end_tournament():
         print("End of the tournament !")
 
-    @classmethod
-    def delete_player(cls):
-        return cls.yes_or_no("Are you sure you want to delete this player ? (Y/n):\t")
+    def delete_player(self):
+        return self.yes_or_no("Are you sure you want to delete this player ? (Y/n):\t")
 
-    @classmethod
-    def continue_tournament(cls):
-        return cls.yes_or_no("Do you want to continue the tournament ? (Y/n):\t")
+    def continue_tournament(self):
+        return self.yes_or_no("Do you want to continue the tournament ? (Y/n):\t")
 
-    @classmethod
-    def tournament_msg(cls, i):
+    def tournament_msg(self, i):
         if i == 0:
-            return cls.begin_tournament()
+            return self.begin_tournament()
         else:
-            return cls.continue_tournament()
+            return self.continue_tournament()
 
     @staticmethod
     def player_deleted():
         print("Player deleted !")
 
-    @classmethod
-    def show_tournaments(cls, tournaments):
+    @staticmethod
+    def nothing_to_continue():
+        print("There is no tournament available in database.")
+
+    def display_reports(self):
+        choice = ""
+        while True:
+            try:
+                choice = self.check_int(
+                    "(1) - List all users.\n"
+                    "(2) - List all tournaments.\n"
+                    "(3) - Return\n\n"
+                    "Choose an option:\t"
+                )
+                if 1 > choice > 3:
+                    raise ValueError
+            except ValueError:
+                self.max_input(3)
+                continue
+            break
+        return choice
+
+    def users_report(self):
+        choice = ""
+        while True:
+            try:
+                choice = self.check_int(
+                    "(1) - List users by alphabet order.\n"
+                    "(2) - List users by classment.\n"
+                    "(3) - Return\n\n"
+                    "Choose an option:\t"
+                )
+                if 1 > choice > 3:
+                    raise ValueError
+            except ValueError:
+                self.max_input(3)
+                continue
+            break
+        return choice
+
+    def show_u_tournaments(self, tournaments):
         for tournament in tournaments:
             print(
                 f"\t\t\t[{tournament.id}] - Name: {tournament.name} - Location: {tournament.location}\n"
                 f"Time Control: {tournament.gamestype} - Begin Date Time: {tournament.begin_date_time}\n\n"
             )
-        return cls.check_int("Enter the id of the tournament you want to continue:\t")
+        return self.check_int(
+            "Enter the id of the tournament you want to continue, or (99) to go back:\t"
+        )
+
+    def show_f_tournaments(self, tournaments):
+        for tournament in tournaments:
+            print(
+                f"\t\t\t[{tournament.id}] - Name: {tournament.name} - Location: {tournament.location}\n"
+                f"Time Control: {tournament.gamestype} - Begin Date Time: {tournament.begin_date_time}\n"
+                f"\t\t\tEnd Date Time: {tournament.end_date_time}\n\n"
+            )
+        return self.check_int("Enter the id of a tournament or (99) to go back:\t")
+
+    @staticmethod
+    def tournament_report(tournament, tournament_rounds):
+        print(
+            f"Name: {tournament.name} - Location: {tournament.location} - Time Control: {tournament.gamestype}\n"
+            f"Round Numbers: {tournament.round_number} - Begin Date Time: {tournament.begin_date_time}\n"
+            f"\t\t\tEnd Date Time: {tournament.end_date_time}\n"
+            f"Players:"
+        )
+        for player in tournament.players:
+            print(f"- {player.name} {player.lastname}")
+        print("\nRounds:")
+        for key in tournament_rounds:
+            print(f"- {key}: [{tournament_rounds[f'{key}']}]")
+        print("\n")
+
+    def round_id(self):
+        return self.check_int(
+            "Enter the id of the round you want to see report or (99) to return:\t"
+        )
+
+    @staticmethod
+    def round_report(round_dict, round_name, games, player_one, player_two):
+        print(
+            f"[{round_name}]:\n"
+            f"- Begin Date Time: {round_dict['begin_date_time']}\n"
+            f"- End Date Time: {round_dict['end_date_time']}\n"
+            f"Games: "
+        )
+        i = 0
+        for game in games:
+            if list(game.items())[0][1][1] == 1:
+                player_one_color = "Black"
+                player_two_color = "White"
+            else:
+                player_one_color = "White"
+                player_two_color = "Black"
+            print(
+                f"- {list(game.keys())[0]}: [{list(game.items())[0][1][0][0][1]}] {player_one[i].name} "
+                f"{player_one[i].lastname} (Played {player_one_color})"
+                f" - [{list(game.items())[0][1][0][1][1]}] {player_two[i].name} "
+                f"{player_two[i].lastname} (Played {player_two_color})"
+            )
+            i += 1

@@ -1,5 +1,6 @@
 from tinydb import TinyDB, Query
 from datetime import datetime
+from random import randrange
 
 
 class Database:
@@ -37,7 +38,7 @@ class Database:
         db = cls.get_db()
         if db_i == 1:
             db = cls.get_user_table()
-        if db_i == 2:
+        elif db_i == 2:
             db = cls.get_tournament_table()
         if db.get(doc_id=identity) is None:
             return False
@@ -71,10 +72,10 @@ class Database:
         return cls.get_db().table("Game")
 
     @classmethod
-    def unfinished_tournament(cls):
+    def read_tournaments(cls, val):
         tournament_ids = []
         db = cls.get_tournament_table()
-        tournaments = db.search(Query().is_done == False)
+        tournaments = db.search(Query().is_done == val)
         for tournament in tournaments:
             tournament_ids.append(tournament.doc_id)
         return tournament_ids
@@ -161,15 +162,20 @@ class Player:
         cls.DB_USER.remove(doc_ids=[identifier])
 
     @classmethod
-    def read_all(cls):
+    def read_all(cls, m):
         """
         The method load all the players from the database.
+        m: the method for the players classment.
         Returns:
             users: the list of all the users in the database.
             id_list: the list of all the ids of the players.
         """
         id_list = []
         users = cls.DB_USER.all()
+        if m == 0:
+            users = sorted(users, key=lambda x: x["lastname"])
+        elif m == 1:
+            users = sorted(users, key=lambda x: x["classment"])
         for i in range(0, len(users)):
             id_list.append(users[i].doc_id)
         return [users, id_list]
@@ -186,6 +192,7 @@ class Game:
         self.id = int
         self.player_one = player_one
         self.player_two = player_two
+        self.is_black = randrange(1, 3)
 
     def game_result(self, winner=int):
         """
@@ -199,47 +206,28 @@ class Game:
             game and a second list with the data about the player two.
         """
         if winner == 1:
-            result = (
-                [
-                    f"[{self.player_one.id}] {self.player_one.name} {self.player_one.lastname}",
-                    1,
-                ],
-                [
-                    f"[{self.player_two.id}] {self.player_two.name} {self.player_two.lastname}",
-                    0,
-                ],
-            )
+            result = ([self.player_one.id, 1], [self.player_two.id, 0])
             self.player_one.point += 1
         elif winner == 2:
-            result = (
-                [
-                    f"[{self.player_one.id}] {self.player_one.name} {self.player_one.lastname}",
-                    0,
-                ],
-                [
-                    f"[{self.player_two.id}] {self.player_two.name} {self.player_two.lastname}",
-                    1,
-                ],
-            )
+            result = ([self.player_one.id, 0], [self.player_two.id, 1])
             self.player_two.point += 1
         else:
-            result = (
-                [
-                    f"[{self.player_one.id}] {self.player_one.name} {self.player_one.lastname}",
-                    0.5,
-                ],
-                [
-                    f"[{self.player_two.id}] {self.player_two.name} {self.player_two.lastname}",
-                    0.5,
-                ],
-            )
+            result = ([self.player_one.id, 0.5], [self.player_two.id, 0.5])
             self.player_one.point += 0.5
             self.player_two.point += 0.5
         return result
 
-    def save(self, winner):
+    def save(self, winner, i):
         result = self.game_result(winner)
-        return self.DB_GAME.insert({"game": result})
+        is_black = self.is_black
+        return self.DB_GAME.insert({f"Game {i}": [result, is_black]})
+
+    @classmethod
+    def load_games_res(cls, ids):
+        games_res = []
+        for identifier in ids:
+            games_res.append(cls.DB_GAME.get(doc_id=identifier))
+        return games_res
 
 
 class Round:
@@ -250,6 +238,7 @@ class Round:
         self.players = players
         self.p_selected = []
         self.games = []
+        self.begin_date_time = f"{datetime.now()}"
 
     def sort_by_classment(self):
         """
@@ -260,8 +249,6 @@ class Round:
         self.games = []
         sorted(self.players, reverse=True, key=lambda player: player.classment)
         for i in range(0, 4):
-            self.players[i].opponents.append(self.players[i + 4].id)
-            self.players[i + 4].opponents.append(self.players[i].id)
             self.games.append(Game(self.players[i], self.players[i + 4]))
 
     def select_p1(self):
@@ -282,13 +269,16 @@ class Round:
             ):
                 self.p_selected.append(self.players[i].id)
                 p2 = self.players[i]
-                p2.opponents.append(p1.id)
-                p1.opponents.append(p2.id)
                 break
         return p2
 
+    def append_opponents(self):
+        for game in self.games:
+            game.player_one.opponents.append(game.player_two.id)
+            game.player_two.opponents.append(game.player_one.id)
+
     def sort_by_point(self):
-        sorted(self.players, reverse=True, key=lambda player: player.point)
+        sorted(self.players, reverse=True, key=lambda players: players.point)
         while len(self.games) != 4:
             p1 = self.select_p1()
             p2 = self.select_p2(p1)
@@ -298,10 +288,16 @@ class Round:
         i = 0
         res = {}
         for game in self.games:
-            identifier = game.save(games_result[i])
+            identifier = game.save(games_result[i], i + 1)
             res.update({f"Game {i + 1}": identifier})
             i += 1
+        res.update({"begin_date_time": self.begin_date_time})
+        res.update({"end_date_time": f"{datetime.now()}"})
         return self.DB_ROUND.insert(res)
+
+    @classmethod
+    def games_from_db(cls, identifier):
+        return cls.DB_ROUND.get(doc_id=identifier)
 
 
 class Tournament:
@@ -314,8 +310,8 @@ class Tournament:
         self.gamestype = tour_info["time_control"]
         self.round_number = tour_info["round_number"]
         self.description = tour_info["description"]
-        self.begin_date_time = f"{datetime.now()}"
-        self.end_date_time = None
+        self.begin_date_time = tour_info["begin_date_time"]
+        self.end_date_time = tour_info["end_date_time"]
         self.player_ids = tour_info["player_ids"]
         self.is_done = False
         self.players = []
@@ -351,7 +347,7 @@ class Tournament:
         tournament.id = identifier
         return tournament
 
-    def end_tournament(self):
+    def end(self):
         self.is_done = True
         self.end_date_time = f"{datetime.now()}"
         self.DB_TOURNAMENT.update({"is_done": self.is_done}, doc_ids=[self.id])
@@ -381,13 +377,30 @@ class Tournament:
             player.read_tour_info()
 
     def get_i(self):
-        i = -1
+        i = 0
         for key in self.DB_TOURNAMENT.get(doc_id=self.id).keys():
-            word = key.split("_")
-            if "round" in word:
+            word = key.split(" ")
+            if "Round" in word:
                 i += 1
         return i
 
-    def save_round(self, round_r, round_res):
+    def save_round(self, round_r, round_res, i):
         identifier = round_r.save(round_res)
-        self.DB_TOURNAMENT.update({"round": identifier}, doc_ids=[self.id])
+        self.DB_TOURNAMENT.update({f"Round {i + 1}": identifier}, doc_ids=[self.id])
+
+    @classmethod
+    def load(cls, val):
+        tournaments = []
+        tournaments_id = Database.read_tournaments(val)
+        for ids in tournaments_id:
+            tournaments.append(cls.read(ids))
+        return [tournaments, tournaments_id]
+
+    def rounds_from_db(self):
+        get_tour = self.DB_TOURNAMENT.get(doc_id=self.id)
+        key_dict = {}
+        for key in get_tour.keys():
+            word = key.split(" ")
+            if "Round" in word:
+                key_dict.update({f"{key}": get_tour[key]})
+        return key_dict
