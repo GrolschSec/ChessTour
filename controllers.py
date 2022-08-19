@@ -283,13 +283,26 @@ class MenuController:
             tour_id: the id of the tournament
 
         Returns:
-            n: the choice of round or 99 to return.
-            the name of the round selected.
+            void.
         """
-        n = None
         tournament = Tournament.read(tour_id)
         round_dict = tournament.rounds_from_db()
-        cls.MENU_VIEW.tournament_report(tournament, round_dict)
+        option = cls.MENU_VIEW.tournament_report(tournament, round_dict)
+        if option == 1:
+            choice = cls.MENU_VIEW.select_players_view()
+            if choice == 1:
+                tournament.sort_players_alphabet()
+                cls.MENU_VIEW.show_players_tournament(tournament)
+            elif choice == 2:
+                tournament.sort_players_classment()
+                cls.MENU_VIEW.show_players_tournament(tournament)
+            return 0
+        elif option == 2:
+            return cls.info_round(round_dict)
+
+    @classmethod
+    def info_round(cls, round_dict):
+        n = None
         while True:
             try:
                 n = cls.MENU_VIEW.round_id()

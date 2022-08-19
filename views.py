@@ -215,6 +215,19 @@ class MenuView:
             break
         return classment
 
+    def choose_an_option(self, maxint):
+        choice = 0
+        while True:
+            try:
+                choice = self.check_int("Choose an option:\t")
+                if not 0 < choice < (maxint + 1):
+                    raise ValueError
+            except ValueError:
+                self.max_input(maxint)
+                continue
+            break
+        return choice
+
     @staticmethod
     def description(message):
         """
@@ -396,6 +409,13 @@ class MenuView:
             )
             i += 1
         print("\n")
+
+    @staticmethod
+    def show_players_tournament(tournament):
+        for player in tournament.players:
+            print(
+                f"[{player.id}] Name: {player.name} - Lastname: {player.lastname} - Classment: {player.classment}"
+            )
 
     def display_tournament(self):
         """
@@ -667,8 +687,7 @@ class MenuView:
             )
         return self.check_int("Enter the id of a tournament or (99) to go back:\t")
 
-    @staticmethod
-    def tournament_report(tournament, tournament_rounds):
+    def tournament_report(self, tournament, tournament_rounds):
         """
         This function print the report of the tournament.
         Args:
@@ -682,14 +701,16 @@ class MenuView:
             f"Name: {tournament.name} - Location: {tournament.location} - Time Control: {tournament.gamestype}\n"
             f"Round Numbers: {tournament.round_number} - Begin Date Time: {tournament.begin_date_time}\n"
             f"\t\t\tEnd Date Time: {tournament.end_date_time}\n"
-            f"Players:"
+            f"(1) - See players of the tournament.\n"
+            f"(2) - See the rounds of the tournament.\n"
         )
-        for player in tournament.players:
-            print(f"- {player.name} {player.lastname}")
-        print("\nRounds:")
-        for key in tournament_rounds:
-            print(f"- {key}: [{tournament_rounds[f'{key}']}]")
-        print("\n")
+        choice = self.choose_an_option(2)
+        if choice == 1:
+            pass
+        elif choice == 2:
+            for keys in tournament_rounds.keys():
+                print(f"- {keys}: [{tournament_rounds[keys]}]")
+        return choice
 
     def round_id(self):
         """
@@ -741,23 +762,10 @@ class MenuView:
         """
         This method ask the user if he wants to modify the classment or go to next round.
         Returns:
-            choice: an int
+            an int.
         """
-        print(
-            "(1) - Next round.\n"
-            "(2) - Modify players classment.\n"
-        )
-        choice = 0
-        while True:
-            try:
-                choice = self.check_int("Choose an option:\t")
-                if not 0 < choice < 3:
-                    raise ValueError
-            except ValueError:
-                self.max_input(2)
-                continue
-            break
-        return choice
+        print("(1) - Next round.\n" "(2) - Modify players classment.\n")
+        return self.choose_an_option(2)
 
     def show_player_classment(self, player):
         """
@@ -766,21 +774,18 @@ class MenuView:
             player: the player instance.
 
         Returns:
-            choice: an int
+            an int.
         """
         print(
             f"Name: {player.name} - Lastname: {player.lastname} - Classment: {player.classment}\n"
             "(1) - Modify the classment of the player\n"
             "(2) - Continue\n"
         )
-        choice = 0
-        while True:
-            try:
-                choice = self.check_int("Choose an option:\t")
-                if not 0 < choice < 3:
-                    raise ValueError
-            except ValueError:
-                self.max_input(2)
-                continue
-            break
-        return choice
+        return self.choose_an_option(2)
+
+    def select_players_view(self):
+        print(
+            "(1) -  Show players by alphabet order.\n"
+            "(2) - Show players by classment.\n"
+        )
+        return self.choose_an_option(2)
