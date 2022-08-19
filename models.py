@@ -73,6 +73,15 @@ class Database:
 
     @classmethod
     def read_tournaments(cls, val):
+        """
+        Read from database all the tournaments depending on val done or not.
+        Args:
+            val: True or False
+
+        Returns:
+            tournament_ids: the ids of the tournaments.
+
+        """
         tournament_ids = []
         db = cls.get_tournament_table()
         tournaments = db.search(Query().is_done == val)
@@ -181,6 +190,11 @@ class Player:
         return [users, id_list]
 
     def read_tour_info(self):
+        """
+        Read the opponents value, and point if you continue a tournament.
+        Returns:
+            void.
+        """
         self.point = self.DB_USER.get(doc_id=self.id)["point"]
         self.opponents = self.DB_USER.get(doc_id=self.id)["opponents"]
 

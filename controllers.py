@@ -8,6 +8,11 @@ class MenuController:
 
     @classmethod
     def run(cls):
+        """
+        This method run the main menu.
+        Returns:
+            void
+        """
         while True:
             menu_choice = cls.MENU_VIEW.display_main()
             if menu_choice == 1:
@@ -21,6 +26,11 @@ class MenuController:
 
     @classmethod
     def run_player(cls):
+        """
+        This method run the player menu.
+        Returns:
+            void.
+        """
         while True:
             menu_choice = cls.MENU_VIEW.display_player()
             if menu_choice == 1:
@@ -48,6 +58,11 @@ class MenuController:
 
     @classmethod
     def run_tournament(cls):
+        """
+        This method run the tournament menu.
+        Returns:
+            void.
+        """
         while True:
             menu_choice = cls.MENU_VIEW.display_tournament()
             if menu_choice == 1:
@@ -111,6 +126,14 @@ class MenuController:
 
     @classmethod
     def select_tournament(cls, t):
+        """
+        This function is used to select a tournament to continue, or to show a report.
+        Args:
+            t: the type of tournament unfinished, or finished.
+
+        Returns:
+            the id of the selected tournament.
+        """
         identifier = 0
         tournaments = Tournament.load(True)
         if t == "u":
@@ -156,6 +179,15 @@ class MenuController:
 
     @classmethod
     def tournament(cls, tournament, i):
+        """
+        This method is the algorithm of the tournament
+        Args:
+            tournament: the Tournament instance
+            i: the index of the tournament.
+
+        Returns:
+            void.
+        """
         if i == 0 and tournament.id is None:
             if cls.MENU_VIEW.save_to_db():
                 tournament.create()
@@ -181,6 +213,14 @@ class MenuController:
 
     @classmethod
     def user_selected(cls, id_list):
+        """
+        Check if a user is already selected or not.
+        Args:
+            id_list: the list of identifier.
+
+        Returns:
+            The identifier of the user if correct.
+        """
         identifier = 0
         while True:
             try:
@@ -195,6 +235,9 @@ class MenuController:
 
     @classmethod
     def run_reports(cls):
+        """
+        This function show the report menu.
+        """
         while True:
             choice = cls.MENU_VIEW.display_reports()
             if choice == 1:
@@ -217,6 +260,15 @@ class MenuController:
 
     @staticmethod
     def in_dict(n, round_dict):
+        """
+        This method check if a value is present in a dictionary.
+        Args:
+            n: the value
+            round_dict: the dictionary.
+
+        Returns:
+            True if the value  is present, False if not.
+        """
         for key in round_dict:
             if n == round_dict[f"{key}"]:
                 return True
@@ -224,6 +276,15 @@ class MenuController:
 
     @classmethod
     def tournament_report(cls, tour_id):
+        """
+        Make a report of the tournament !
+        Args:
+            tour_id: the id of the tournament
+
+        Returns:
+            n: the choice of round or 99 to return.
+            the name of the round selected.
+        """
         n = None
         tournament = Tournament.read(tour_id)
         round_dict = tournament.rounds_from_db()
@@ -242,6 +303,14 @@ class MenuController:
 
     @classmethod
     def round_report(cls, round_info):
+        """
+        Make a report of the round.
+        Args:
+            round_info: the round information.
+
+        Returns:
+            void.
+        """
         round_dict = Round.games_from_db(round_info[0])
         games_ids = []
         for keys in round_dict.keys():
