@@ -198,6 +198,7 @@ class MenuController:
                 tournament.load_players_data()
             while i < int(tournament.round_number):
                 round_r = tournament.sort_round(i)
+                cls.round_or_classment(tournament)
                 cls.MENU_VIEW.show_games(round_r.games)
                 if cls.MENU_VIEW.play_the_round():
                     round_res = cls.MENU_VIEW.game_win(round_r.games)
@@ -327,3 +328,17 @@ class MenuController:
         cls.MENU_VIEW.round_report(
             round_dict, round_name, games, players_one, players_two
         )
+
+    @classmethod
+    def round_or_classment(cls, tournament):
+        # Ask if we go to next round or if the admin want to modify the classment of a player
+        choice = cls.MENU_VIEW.round_or_classment()
+        if choice == 1:
+            pass
+        elif choice == 2:
+            for player in tournament.players:
+                m_o_n = cls.MENU_VIEW.show_player_classment(player)
+                if m_o_n == 1:
+                    player.update(player.id, "classment", cls.MENU_VIEW.classment())
+                else:
+                    pass

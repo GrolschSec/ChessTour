@@ -119,6 +119,11 @@ class Player:
         return serialized_player
 
     def clear_opponents(self):
+        """
+        this method clear the attribute opponents of a player
+        Returns:
+            void.
+        """
         self.opponents = []
 
     def create(self):
@@ -232,6 +237,15 @@ class Game:
         return result
 
     def save(self, winner, i):
+        """
+        This method save the game to the db.
+        Args:
+            winner: the winner of the game.
+            i: the game number.
+
+        Returns:
+            the id in the db.
+        """
         result = self.game_result(winner)
         is_black = self.is_black
         return self.DB_GAME.insert({f"Game {i}": [result, is_black]})
@@ -258,7 +272,7 @@ class Round:
         """
         The method sort the players by their classment and then make four instance of games.
         Returns:
-            games_round: the games instances for the round.
+            void.
         """
         self.games = []
         self.players = sorted(self.players, reverse=True, key=lambda player: player.classment)

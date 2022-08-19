@@ -199,11 +199,21 @@ class MenuView:
 
     def classment(self):
         """
-        This function ask for the classment of a Player
+        This function ask for the classment of a Player (a positive number).
         Returns:
             the classment of the player (int).
         """
-        return self.check_int("Enter the classment of the player: ")
+        classment = 0
+        while True:
+            try:
+                classment = self.check_int("Enter the classment of the player: ")
+                if classment < 1:
+                    raise ValueError
+            except ValueError:
+                print("Classment of the player must be greater than 0.")
+                continue
+            break
+        return classment
 
     @staticmethod
     def description(message):
@@ -545,7 +555,7 @@ class MenuView:
     def tournament_msg(self, i):
         """
         This function is used when continuing a tournament,
-         it will select the good message to show depending of the index of the tournament.
+         it will select the good message to show depending on the index of the tournament.
 
         Args:
             i: the index of the tournament.
@@ -726,3 +736,51 @@ class MenuView:
                 f"{player_two[i].lastname} (Played {player_two_color})"
             )
             i += 1
+
+    def round_or_classment(self):
+        """
+        This method ask the user if he wants to modify the classment or go to next round.
+        Returns:
+            choice: an int
+        """
+        print(
+            "(1) - Next round.\n"
+            "(2) - Modify players classment.\n"
+        )
+        choice = 0
+        while True:
+            try:
+                choice = self.check_int("Choose an option:\t")
+                if not 0 < choice < 3:
+                    raise ValueError
+            except ValueError:
+                self.max_input(2)
+                continue
+            break
+        return choice
+
+    def show_player_classment(self, player):
+        """
+        This method print the player name, lastname and classment and ask if we want to modify it.
+        Args:
+            player: the player instance.
+
+        Returns:
+            choice: an int
+        """
+        print(
+            f"Name: {player.name} - Lastname: {player.lastname} - Classment: {player.classment}\n"
+            "(1) - Modify the classment of the player\n"
+            "(2) - Continue\n"
+        )
+        choice = 0
+        while True:
+            try:
+                choice = self.check_int("Choose an option:\t")
+                if not 0 < choice < 3:
+                    raise ValueError
+            except ValueError:
+                self.max_input(2)
+                continue
+            break
+        return choice
