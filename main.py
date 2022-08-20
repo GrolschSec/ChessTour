@@ -1,4 +1,5 @@
-from controllers import MenuController
+from ChessTour.controllers import MenuController
+
 
 if __name__ == "__main__":
     controller = MenuController.run()

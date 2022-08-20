@@ -11,7 +11,7 @@ class Database:
         Returns:
             db: The database.
         """
-        db = TinyDB("db.json")
+        db = TinyDB("ChessTour/db.json")
         return db
 
     @classmethod
@@ -353,7 +353,7 @@ class Round:
         """
         This method save the round to db.
         Args:
-            games_result: the result of each games.
+            games_result: the result of each game.
 
         Returns:
             identifier of the round in db.

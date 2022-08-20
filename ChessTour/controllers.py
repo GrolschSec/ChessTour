@@ -1,5 +1,5 @@
-from models import Player, Tournament, Database, Round, Game
-from views import MenuView
+from ChessTour.models import Player, Tournament, Database, Round, Game
+from ChessTour.views import MenuView
 from sys import exit
 
 
