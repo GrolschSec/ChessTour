@@ -281,8 +281,6 @@ class MenuController:
             void.
         """
         tournament = Tournament.read(tour_id)
-        if not tournament:
-            return cls.MENU_VIEW.id_error(1)
         round_dict = tournament.rounds_from_db()
         option = cls.MENU_VIEW.tournament_report(tournament, round_dict)
         if option == 1:
@@ -331,6 +329,8 @@ class MenuController:
         Returns:
             void.
         """
+        if not round_info:
+            return cls.MENU_VIEW.nothing_to_continue()
         round_dict = Round.games_from_db(round_info[0])
         games_ids = []
         for keys in round_dict.keys():
