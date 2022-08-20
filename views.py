@@ -784,6 +784,11 @@ class MenuView:
         return self.choose_an_option(2)
 
     def select_players_view(self):
+        """
+        This method print a choice to shwo the player in the report menu.
+        Returns:
+            an int, the option.
+        """
         print(
             "(1) -  Show players by alphabet order.\n"
             "(2) - Show players by classment.\n"

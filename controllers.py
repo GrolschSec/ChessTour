@@ -302,6 +302,14 @@ class MenuController:
 
     @classmethod
     def info_round(cls, round_dict):
+        """
+        Ask for which round the user wants to see.
+        Args:
+            round_dict: the rounds info
+
+        Returns:
+            a list with the round id and the round name or 0 if we quit
+        """
         n = None
         while True:
             try:
@@ -344,7 +352,14 @@ class MenuController:
 
     @classmethod
     def round_or_classment(cls, tournament):
-        # Ask if we go to next round or if the admin want to modify the classment of a player
+        """
+        This method ask the user if he wants to modify the players classment.
+        Args:
+            tournament: the Tournament instance
+
+        Returns:
+            void.
+        """
         choice = cls.MENU_VIEW.round_or_classment()
         if choice == 1:
             pass

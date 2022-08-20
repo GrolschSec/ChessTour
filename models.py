@@ -252,6 +252,14 @@ class Game:
 
     @classmethod
     def load_games_res(cls, ids):
+        """
+        This method get all the games of a round from db.
+        Args:
+            ids: the list of identifier of the games.
+
+        Returns:
+            The list of the result of each games
+        """
         games_res = []
         for identifier in ids:
             games_res.append(cls.DB_GAME.get(doc_id=identifier))
@@ -282,6 +290,12 @@ class Round:
             self.games.append(Game(self.players[i], self.players[i + 4]))
 
     def select_p1(self):
+        """
+        This method select the player one by checking the list of player and verifying that the
+        player is not already selected.
+        Returns:
+            the Player instance for the player_one
+        """
         p1 = None
         for i in range(0, 8):
             if self.players[i].id not in self.p_selected:
@@ -291,6 +305,15 @@ class Round:
         return p1
 
     def select_p2(self, p1):
+        """
+        This method select the player two of game by verifying that the player is not already selected and
+        that he is not in the attribute opponents of the player one.
+        Args:
+            p1: the instance Player of the player one.
+
+        Returns:
+            the instance of Player for the player two.
+        """
         p2 = None
         for i in range(0, 8):
             if (
@@ -303,11 +326,21 @@ class Round:
         return p2
 
     def append_opponents(self):
+        """
+        This method append the opponents for each player of each games of a round.
+        Returns:
+            void.
+        """
         for game in self.games:
             game.player_one.opponents.append(game.player_two.id)
             game.player_two.opponents.append(game.player_one.id)
 
     def sort_by_point(self):
+        """
+        This method makes four instance of game by sorting the player by point.
+        Returns:
+            void.
+        """
         self.players = sorted(
             self.players, reverse=True, key=lambda players: players.point
         )
@@ -317,6 +350,14 @@ class Round:
             self.games.append(Game(p1, p2))
 
     def save(self, games_result):
+        """
+        This method save the round to db.
+        Args:
+            games_result: the result of each games.
+
+        Returns:
+            identifier of the round in db.
+        """
         i = 0
         res = {}
         for game in self.games:
@@ -329,6 +370,14 @@ class Round:
 
     @classmethod
     def games_from_db(cls, identifier):
+        """
+        Retrieve a round from db.
+        Args:
+            identifier: the id of the round.
+
+        Returns:
+            the round data.
+        """
         return cls.DB_ROUND.get(doc_id=identifier)
 
 
@@ -354,9 +403,9 @@ class Tournament:
 
     def serialize(self):
         """
-
+        Serialize an instance of tournament.
         Returns:
-
+            the serialized dictionary.
         """
         serialized_tournament = {
             "name": self.name,
@@ -372,16 +421,34 @@ class Tournament:
         return serialized_tournament
 
     def create(self):
+        """
+        Save the tournament to db.
+        Returns:
+            the tournament id.
+        """
         self.id = self.DB_TOURNAMENT.insert(self.serialize())
         return self.id
 
     @classmethod
     def read(cls, identifier):
+        """
+        Read a tournament from db.
+        Args:
+            identifier: the id of the tournament to read.
+
+        Returns:
+            the tournament instance.
+        """
         tournament = Tournament(cls.DB_TOURNAMENT.get(doc_id=identifier))
         tournament.id = identifier
         return tournament
 
     def end(self):
+        """
+        End the tournament adding the time, modifying is_done to True.
+        Returns:
+            void.
+        """
         self.is_done = True
         self.end_date_time = f"{datetime.now()}"
         self.DB_TOURNAMENT.update({"is_done": self.is_done}, doc_ids=[self.id])
@@ -390,6 +457,14 @@ class Tournament:
         )
 
     def sort_round(self, i):
+        """
+        Sorting rounds for the tournament depending on the index.
+        Args:
+            i: the index of the tournament.
+
+        Returns:
+            the round instance.
+        """
         round_r = Round(self.players)
         if i == 0:
             round_r.sort_by_classment()
@@ -402,20 +477,40 @@ class Tournament:
         return round_r
 
     def save_players_data(self):
+        """
+        Save the points and the opponents for each player to db if a tournaments isn't finished.
+        Returns:
+            void.
+        """
         for player in self.players:
             player.update(player.id, "point", player.point)
             player.update(player.id, "opponents", player.opponents)
 
     def load_players_data(self):
+        """
+        Load the points and opponents when continuing a tournament.
+        Returns:
+            void.
+        """
         for player in self.players:
             player.read_tour_info()
 
     def clear_players_data(self):
+        """
+        Clear the players datas at the end of a tournament.
+        Returns:
+            void.
+        """
         for player in self.players:
             player.update(player.id, "point", 0)
             player.update(player.id, "opponents", [])
 
     def get_i(self):
+        """
+        Get the index of the tournament when continuing a tournament.
+        Returns:
+            the index of the tournament.
+        """
         i = 0
         for key in self.DB_TOURNAMENT.get(doc_id=self.id).keys():
             word = key.split(" ")
@@ -424,17 +519,45 @@ class Tournament:
         return i
 
     def save_round(self, round_r, round_res, i):
+        """
+        Save a round to db.
+        Args:
+            round_r: the round instance
+            round_res: the result for the round
+            i: the index of the tournament.
+
+        Returns:
+            void.
+        """
         identifier = round_r.save(round_res)
         self.DB_TOURNAMENT.update({f"Round {i + 1}": identifier}, doc_ids=[self.id])
 
     def sort_players_alphabet(self):
+        """
+        Sort tournament players for report by alphabet order.
+        Returns:
+            void.
+        """
         self.players = sorted(self.players, key=lambda player: player.lastname)
 
     def sort_players_classment(self):
+        """
+        Sort tournament players for report by classment.
+        Returns:
+            void.
+        """
         self.players = sorted(self.players, key=lambda player: player.classment)
 
     @classmethod
     def load(cls, val):
+        """
+        Read all the tournaments from db depending on val.
+        Args:
+            val: True (finished) or False (unfinished).
+
+        Returns:
+            a list with the tournaments instance and the ids
+        """
         tournaments = []
         tournaments_id = Database.read_tournaments(val)
         for ids in tournaments_id:
@@ -442,6 +565,11 @@ class Tournament:
         return [tournaments, tournaments_id]
 
     def rounds_from_db(self):
+        """
+        Read the rounds of a tournament from db.
+        Returns:
+            void.
+        """
         get_tour = self.DB_TOURNAMENT.get(doc_id=self.id)
         key_dict = {}
         for key in get_tour.keys():
