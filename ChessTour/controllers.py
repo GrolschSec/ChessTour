@@ -284,7 +284,7 @@ class MenuController:
         round_dict = tournament.rounds_from_db()
         option = cls.MENU_VIEW.tournament_report(tournament, round_dict)
         if option == 1:
-            tournament.read_players_point()
+            tournament.read_point()
             choice = cls.MENU_VIEW.select_players_view()
             if choice == 1:
                 tournament.sort_players_alphabet()
