@@ -18,7 +18,7 @@ class MenuView:
             "(2) - Tournament.\n"
             "(3) - Quit the program.\n"
         )
-        return self.check_int("Choose an option: ")
+        return self.choose_an_option(3)
 
     def display_player(self):
         """
@@ -34,7 +34,7 @@ class MenuView:
             "(4) - Show all players.\n"
             "(5) - Back to main menu.\n"
         )
-        return self.check_int("Choose an option: ")
+        return self.choose_an_option(5)
 
     @staticmethod
     def quit_program():
@@ -272,22 +272,16 @@ class MenuView:
         Returns:
             a string that contain the type of game (Blitz, Bullet, Coup rapide).
         """
-        while True:
-            time = self.check_int(
-                "Time Control: \n"
-                "(1) - Blitz.\n"
-                "(2) - Bullet.\n"
-                "(3) - Coup rapide.\n"
-                "Choose a number: "
-            )
-            if time == 1:
-                return "Blitz"
-            elif time == 2:
-                return "Bullet"
-            elif time == 3:
-                return "Coup rapide"
-            else:
-                self.max_input(3)
+        print(
+            "Time Control: \n" "(1) - Blitz.\n" "(2) - Bullet.\n" "(3) - Coup rapide.\n"
+        )
+        time = self.choose_an_option(3)
+        if time == 1:
+            return "Blitz"
+        elif time == 2:
+            return "Bullet"
+        elif time == 3:
+            return "Coup rapide"
 
     def sex_input(self, message):
         """
@@ -318,24 +312,15 @@ class MenuView:
         Returns:
             param: the parameter to modify.
         """
-        param_choice = ""
-        while True:
-            try:
-                param_choice = self.check_int(
-                    "Which parameter would you like to modify: \n"
-                    f"1: Name: {user_info['name']}.\n"
-                    f"2: Lastname: {user_info['lastname']}.\n"
-                    f"3: Birthday: {user_info['birthday']}.\n"
-                    f"4: Sex: {user_info['sex']}.\n"
-                    f"5: Classment: {user_info['classment']}.\n"
-                    "Choose a number: "
-                )
-                if param_choice < 1 or param_choice > 5:
-                    raise ValueError
-            except ValueError:
-                print("Input must be a number between 1 and 5")
-                continue
-            break
+        print(
+            "Which parameter would you like to modify: \n"
+            f"1: Name: {user_info['name']}.\n"
+            f"2: Lastname: {user_info['lastname']}.\n"
+            f"3: Birthday: {user_info['birthday']}.\n"
+            f"4: Sex: {user_info['sex']}.\n"
+            f"5: Classment: {user_info['classment']}.\n"
+        )
+        param_choice = self.choose_an_option(5)
         param = ""
         if param_choice == 1:
             param = "name"
@@ -415,6 +400,7 @@ class MenuView:
         for player in tournament.players:
             print(
                 f"[{player.id}] Name: {player.name} - Lastname: {player.lastname} - Classment: {player.classment}"
+                f" - Point: [{player.point}]"
             )
 
     def display_tournament(self):
@@ -430,7 +416,7 @@ class MenuView:
             "(3) - Report Menu.\n"
             "(4) - Back to main menu.\n"
         )
-        return self.check_int("Choose an option: ")
+        return self.choose_an_option(4)
 
     def tournament_info(self):
         """
@@ -460,7 +446,11 @@ class MenuView:
             void.
         """
         i = 0
-        print("Game ID  -   Player One      -       Player Two")
+        print(
+            f"Game ID{5 * ' '}"
+            f"-{10 * ' '}Player One{10 * ' '}(Point){5 * ' '}(Classment){5 * ' '}(Color){5 * ' '}"
+            f"-{10 * ' '}Player Two{10 * ' '}(Point){5 * ' '}(Classment){5 * ' '}(Color){5 * ' '}"
+        )
         for game in games:
             if game.is_black == 1:
                 player_one_color = "Black"
@@ -468,12 +458,18 @@ class MenuView:
             else:
                 player_one_color = "White"
                 player_two_color = "Black"
+            p1_space = int(
+                (30 - (len(game.player_one.name + game.player_one.lastname) + 2)) / 2
+            )
+            p2_space = int(
+                (30 - (len(game.player_two.name + game.player_two.lastname) + 2)) / 2
+            )
             print(
-                f"{i}"
-                f"        -   "
-                f"{game.player_one.name} {game.player_one.lastname} ({player_one_color})"
-                f"  -   "
-                f"{game.player_two.name} {game.player_two.lastname} ({player_two_color})"
+                f"{2 * ' '}[{i}]{7 * ' '}-{p1_space * ' '}{game.player_one.name} {game.player_one.lastname}"
+                f"{p1_space * ' '}{2 * ' '}[{game.player_one.point}]{8 * ' '}{3 * ' '}[{game.player_one.classment}]"
+                f"{9 * ' '}({player_one_color}){5 * ' '}-{p2_space * ' '}{game.player_two.name} "
+                f"{game.player_two.lastname}{p2_space * ' '}{2 * ' '}[{game.player_two.point}]{8 * ' '}{3 * ' '}"
+                f"[{game.player_two.classment}]{9 * ' '}({player_two_color})"
             )
             i += 1
 
@@ -612,22 +608,10 @@ class MenuView:
         Returns:
             an int the choice of submenu.
         """
-        choice = ""
-        while True:
-            try:
-                choice = self.check_int(
-                    "(1) - List all users.\n"
-                    "(2) - List all tournaments.\n"
-                    "(3) - Return\n\n"
-                    "Choose an option:\t"
-                )
-                if 1 > choice > 3:
-                    raise ValueError
-            except ValueError:
-                self.max_input(3)
-                continue
-            break
-        return choice
+        print(
+            "(1) - List all users.\n" "(2) - List all tournaments.\n" "(3) - Return\n"
+        )
+        return self.choose_an_option(3)
 
     def users_report(self):
         """
@@ -635,22 +619,12 @@ class MenuView:
         Returns:
             the choice a value between 1 and 3.
         """
-        choice = ""
-        while True:
-            try:
-                choice = self.check_int(
-                    "(1) - List users by alphabet order.\n"
-                    "(2) - List users by classment.\n"
-                    "(3) - Return\n\n"
-                    "Choose an option:\t"
-                )
-                if 1 > choice > 3:
-                    raise ValueError
-            except ValueError:
-                self.max_input(3)
-                continue
-            break
-        return choice
+        print(
+            "(1) - List users by alphabet order.\n"
+            "(2) - List users by classment.\n"
+            "(3) - Return\n"
+        )
+        return self.choose_an_option(3)
 
     def show_u_tournaments(self, tournaments):
         """
@@ -785,7 +759,7 @@ class MenuView:
 
     def select_players_view(self):
         """
-        This method print a choice to shwo the player in the report menu.
+        This method print a choice to show the player in the report menu.
         Returns:
             an int, the option.
         """

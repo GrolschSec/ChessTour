@@ -118,14 +118,6 @@ class Player:
         }
         return serialized_player
 
-    def clear_opponents(self):
-        """
-        this method clear the attribute opponents of a player
-        Returns:
-            void.
-        """
-        self.opponents = []
-
     def create(self):
         """
         The method save the data of a user in the database.
@@ -194,13 +186,12 @@ class Player:
             id_list.append(users[i].doc_id)
         return [users, id_list]
 
-    def read_tour_info(self):
+    def read_opponents(self):
         """
-        Read the opponents value, and point if you continue a tournament.
+        Read the opponents value if you continue a tournament.
         Returns:
             void.
         """
-        self.point = self.DB_USER.get(doc_id=self.id)["point"]
         self.opponents = self.DB_USER.get(doc_id=self.id)["opponents"]
 
 
@@ -283,9 +274,7 @@ class Round:
             void.
         """
         self.games = []
-        self.players = sorted(
-            self.players, reverse=True, key=lambda player: player.classment
-        )
+        self.players = sorted(self.players, key=lambda player: player.classment)
         for i in range(0, 4):
             self.games.append(Game(self.players[i], self.players[i + 4]))
 
@@ -468,11 +457,10 @@ class Tournament:
         round_r = Round(self.players)
         if i == 0:
             round_r.sort_by_classment()
-        elif 0 < i < 8:
+        elif 0 < i < 4:
             round_r.sort_by_point()
-        elif i > 7:
-            for player in self.players:
-                player.clear_opponents()
+        elif i > 3:
+            self.clear_opponents()
             round_r.sort_by_point()
         return round_r
 
@@ -482,9 +470,8 @@ class Tournament:
         Returns:
             void.
         """
-        for player in self.players:
-            player.update(player.id, "point", player.point)
-            player.update(player.id, "opponents", player.opponents)
+        self.save_points()
+        self.save_opponents()
 
     def load_players_data(self):
         """
@@ -492,18 +479,44 @@ class Tournament:
         Returns:
             void.
         """
+        self.read_points()
         for player in self.players:
-            player.read_tour_info()
+            player.read_opponents()
 
-    def clear_players_data(self):
+    def save_opponents(self):
         """
-        Clear the players datas at the end of a tournament.
+        This method save the attribute opponents of each player to the tournament db
+        Returns:
+             void
+        """
+        for player in self.players:
+            player.update(player.id, "opponents", player.opponents)
+
+    def save_points(self):
+        """
+        This method save the point of each player at the end of the tournament.
         Returns:
             void.
         """
+        points = {}
         for player in self.players:
-            player.update(player.id, "point", 0)
-            player.update(player.id, "opponents", [])
+            points.update({f"{player.id}": player.point})
+        self.DB_TOURNAMENT.update({"Points": points})
+
+    def clear_opponents(self):
+        for player in self.players:
+            player.opponents = []
+            player.update(player.id, "opponents", player.opponents)
+
+    def read_points(self):
+        """
+        This method is used to get the point of each player to generate the tournament report.
+        Returns:
+            void
+        """
+        points = self.DB_TOURNAMENT.get(doc_id=self.id)["Points"]
+        for player in self.players:
+            player.point = points[f"{player.id}"]
 
     def get_i(self):
         """
@@ -530,6 +543,7 @@ class Tournament:
             void.
         """
         identifier = round_r.save(round_res)
+        self.save_players_data()
         self.DB_TOURNAMENT.update({f"Round {i + 1}": identifier}, doc_ids=[self.id])
 
     def sort_players_alphabet(self):

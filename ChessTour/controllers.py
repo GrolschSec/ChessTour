@@ -21,8 +21,6 @@ class MenuController:
                 cls.run_tournament()
             elif menu_choice == 3:
                 cls.quit_program()
-            else:
-                cls.MENU_VIEW.max_input(3)
 
     @classmethod
     def run_player(cls):
@@ -53,8 +51,6 @@ class MenuController:
                 cls.show_players(0)
             elif menu_choice == 5:
                 break
-            else:
-                cls.MENU_VIEW.max_input(5)
 
     @classmethod
     def run_tournament(cls):
@@ -79,8 +75,6 @@ class MenuController:
                 cls.run_reports()
             elif menu_choice == 4:
                 break
-            else:
-                cls.MENU_VIEW.max_input(4)
 
     @classmethod
     def check_id(cls, message):
@@ -191,6 +185,7 @@ class MenuController:
         if i == 0 and tournament.id is None:
             if cls.MENU_VIEW.save_to_db():
                 tournament.create()
+                tournament.clear_opponents()
             else:
                 return
         if cls.MENU_VIEW.tournament_msg(i):
@@ -206,9 +201,9 @@ class MenuController:
                     tournament.save_round(round_r, round_res, i)
                     i += 1
                 else:
-                    tournament.save_players_data()
                     return
-            tournament.clear_players_data()
+            tournament.clear_opponents()
+            tournament.save_points()
             tournament.end()
             cls.MENU_VIEW.end_tournament()
 
@@ -289,6 +284,7 @@ class MenuController:
         round_dict = tournament.rounds_from_db()
         option = cls.MENU_VIEW.tournament_report(tournament, round_dict)
         if option == 1:
+            tournament.read_players_point()
             choice = cls.MENU_VIEW.select_players_view()
             if choice == 1:
                 tournament.sort_players_alphabet()
