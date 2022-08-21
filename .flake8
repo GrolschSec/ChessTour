@@ -1,0 +1,3 @@
+[flake8]
+exclude = env/, .git, README.md, requirements.txt, ChessTour/db.json
+max-line-length = 119
