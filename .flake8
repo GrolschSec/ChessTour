@@ -1,4 +1,0 @@
-[flake8]
-exclude = .git, env, __pycache__, .gitignore, venv
-max-line-length = 119
-
