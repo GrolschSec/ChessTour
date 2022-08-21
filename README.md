@@ -57,5 +57,9 @@ This menu permit to create a new tournament or continue, it also contains the re
     2. Show the rounds, if you select a round you'll all the games of the round.  
 
 
-
-
+## Generate a flake8 html report:
+The configuration file for flake8 is named '.flake8' in the project dir.
+To generate the report just run the following command.
+```
+flake8 --format=html --htmldir=flake-report
+```
