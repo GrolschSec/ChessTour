@@ -1,6 +1,6 @@
 # ChessTour
 ### Project 4 Open Classrooms D-A Python
-This project is chess tournament manager made with Python3 and TinyDB.
+This project is a chess tournament manager made with Python3 and TinyDB.
 ## Installation:
 
 Clone the repository:
@@ -42,4 +42,16 @@ This menu permit to execute all operations about the players.
 - Show all players.
 
 ### 2. The tournament menu:
+This menu permit to create a new tournament or continue, it also contains the report submenu.  
+- Create a tournament.
+- Continue a tournament.
+- Report menu:
+1. List all users by alphabet order or by classment.
+2. List all tournaments
+3. Once a tournament selected:
+    1. Show the players of the tournament (alphabet or classment).
+    2. Show the rounds, if you select a round you'll all the games of the round.  
+
+
+
 
