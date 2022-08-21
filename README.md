@@ -15,9 +15,13 @@ Create a python virtual environment:
 ```
 python3 -m venv env
 ```  
-Activate the virtual environment:
+Activate the virtual environment (macOS, Linux):
 ```
 source env/bin/activate  
+```
+Activate the virtual environment (Windows):
+```
+env\scripts\activate.bat
 ```
 Install all the dependencies:
 ```
