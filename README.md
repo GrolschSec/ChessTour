@@ -61,5 +61,5 @@ This menu permit to create a new tournament or continue, it also contains the re
 The configuration file for flake8 is named '.flake8' in the project dir.  
 To generate the report just run the following command.  
 ```
-flake8 --format=html --htmldir=flake-report
+python3 -m flake8 --format=html --htmldir=flake-report
 ```
