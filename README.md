@@ -1,5 +1,5 @@
 # ChessTour
-### Project 4 Open Classrooms D-A Python
+### Project 4 OpenClassrooms D-A Python
 This project is a chess tournament manager made with Python3 and TinyDB.
 ## Installation:
 
