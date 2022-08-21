@@ -28,12 +28,18 @@ pip3 install -r requirements.txt
 ```
 python3 main.py
 ```
-  
-Main Menu:  
+Once you'll launch the program you'll have three options:  
+1. Go to the player menu.
+2. Go to the tournament menu.
+3. Quit the program.
 
-(1) - Player menu:  
-    This menu permit to execute all operations about players  
-  (create, show all players, update, delete).  
-(2) - Tournament menu:  
-    This menu permit to create or continue a tournament, and also has a report submenu.
-    (a) - Report submenu.
+
+### 1. The player menu:  
+This menu permit to execute all operations about the players.  
+- Add a player.
+- Modify a player.
+- Remove a player.
+- Show all players.
+
+### 2. The tournament menu:
+
